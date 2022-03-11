@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: dar-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - dar
+  dar:
+    build:
+      args:
+         user: dar
+         uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: dar
+    container_name: dar
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/php:/usr/local/etc/php
+    networks:
+      - dar
+  mysql:
+    platform: linux/amd64
+    image: mysql:5.7
+    container_name: dar-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: dar
+      MYSQL_USER: dar
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: admin.root
+    ports:
+      - 33068:3306
+    volumes:
+      - ./docker-compose/mysql:/var/lib/mysql
+    networks:
+      - dar
+networks:
+    dar:

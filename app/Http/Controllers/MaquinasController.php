@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Marcas;
+use App\Models\Maquinas;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
-class MarcasController extends Controller
+class MaquinasController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,11 +16,11 @@ class MarcasController extends Controller
      */
     public function index()
     {
-        $marcas = Marcas::all(['id','nombre']);
+        $maquinas = Maquinas::with('marca')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
-            'data' => $marcas
+            'data' => $maquinas
         ], Response::HTTP_OK);
     }
 
@@ -33,21 +32,27 @@ class MarcasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-   {
+    {
         $validate = Validator::make($request->all(),[
-            'nombre' => 'required'
+            'nombre' => 'required',
+            'serie' => 'required',
+            'marca' => 'numeric|required',
+            'modelo' => 'required',
+            'linea' => 'required',
+            'registro' => 'required',
+            'tipo' => 'required',
         ]);
 
         if($validate->fails()){
+            return response()->json($validate->errors());
             return response()->json([
                 'status' =>  Response::HTTP_BAD_REQUEST,
                 'message' => 'invalid data'
             ],Response::HTTP_OK);
         }
 
-        $marca= new Marcas();
-        $marca->nombre = strtoupper($request->nombre);
-        $result= $marca->save();
+        $maquinas = new Maquinas($request->all());
+        $result = $maquinas->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -58,19 +63,38 @@ class MarcasController extends Controller
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'message' => 'Error de servidor'
         ], Response::HTTP_OK);
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Maquinas  $maquinas
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Maquinas $maquinas)
+    {
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Maquinas  $maquinas
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Maquinas $maquina)
     {
-         $validate = Validator::make($request->all(),[
-            'nombre' => 'required'
+
+        $validate = Validator::make($request->all(),[
+            'nombre' => 'required',
+            'serie' => 'required',
+            'marca' => 'numeric|required',
+            'modelo' => 'required',
+            'linea' => 'required',
+            'registro' => 'required',
+            'tipo' => 'required',
         ]);
 
         if($validate->fails()){
@@ -80,9 +104,8 @@ class MarcasController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $marca= Marcas::find($id);
-        $marca->nombre = strtoupper($request->nombre);
-        $result= $marca->save();
+        $maquina = $maquina->fill($request->all());
+        $result= $maquina->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -93,23 +116,22 @@ class MarcasController extends Controller
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'message' => 'Error de servidor'
         ], Response::HTTP_OK);
-
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Maquinas  $maquinas
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $marca = Marcas::find($id);
-        if($marca){
-            $marca->delete();
+        $maquina = Maquinas::find($id);
+        if($maquina){
+            $maquina->delete();
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'marca eliminada correctamente'
+                'message' => 'Maquina eliminada correctamente'
             ]);
         }
         return response()->json([
