@@ -16,7 +16,7 @@ class AccesoriosController extends Controller
      */
     public function index()
     {
-        $accesorios= Accesorios::whith('marca','maquina')->get();
+        $accesorios= Accesorios::with('marca','maquina')->get();
         return response()->json([ 
             'status' => Response::HTTP_OK,
             'message' => 'success',
