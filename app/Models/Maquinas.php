@@ -14,10 +14,15 @@ class Maquinas extends Model
         'nombre',
         'serie',
         'marca',
+        'modelo',
         'linea',
         'registro',
         'placa',
         'tipo'
     ];
+
+    public function marca(){
+        return $this->belongsTo(Marcas::class, 'marca', 'id');
+    }
 
 }

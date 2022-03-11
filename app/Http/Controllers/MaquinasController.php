@@ -16,7 +16,7 @@ class MaquinasController extends Controller
      */
     public function index()
     {
-        $maquinas = Maquinas::all();
+        $maquinas = Maquinas::with('marca')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -44,6 +44,7 @@ class MaquinasController extends Controller
         ]);
 
         if($validate->fails()){
+            return response()->json($validate->errors());
             return response()->json([
                 'status' =>  Response::HTTP_BAD_REQUEST,
                 'message' => 'invalid data'
@@ -83,7 +84,7 @@ class MaquinasController extends Controller
      * @param  \App\Models\Maquinas  $maquinas
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Maquinas $maquinas)
+    public function update(Request $request, Maquinas $maquina)
     {
 
         $validate = Validator::make($request->all(),[
@@ -103,8 +104,8 @@ class MaquinasController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $maquinas->fill($request->all());
-        $result= $maquinas->save();
+        $maquina = $maquina->fill($request->all());
+        $result= $maquina->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,
