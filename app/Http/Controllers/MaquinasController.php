@@ -50,9 +50,12 @@ class MaquinasController extends Controller
                 'message' => 'invalid data'
             ],Response::HTTP_OK);
         }
-
         $maquinas = new Maquinas($request->all());
-        $result = $maquinas->save();
+        $maquinas->nombre = strtoupper($request->nombre);
+        $maquinas->serie = strtoupper($request->serie);
+        $maquinas->linea = strtoupper($request->linea);
+        $maquinas->registro = strtoupper($request->registro);
+        $result= $maquinas->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -84,14 +87,14 @@ class MaquinasController extends Controller
      * @param  \App\Models\Maquinas  $maquinas
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Maquinas $maquina)
+    public function update(Request $request, $id)
     {
 
         $validate = Validator::make($request->all(),[
             'nombre' => 'required',
             'serie' => 'required',
             'marca' => 'numeric|required',
-            'modelo' => 'required',
+            'modelo' => 'numeric|required',
             'linea' => 'required',
             'registro' => 'required',
             'tipo' => 'required',
@@ -104,8 +107,13 @@ class MaquinasController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $maquina = $maquina->fill($request->all());
-        $result= $maquina->save();
+        $maquinas = Maquinas:: find($id);
+        $maquinas->fill($request->all());
+        $maquinas->nombre = strtoupper($request->nombre);
+        $maquinas->serie = strtoupper($request->serie);
+        $maquinas->linea = strtoupper($request->linea);
+        $maquinas->resgitro = strtoupper($request->registro);
+        $result= $maquinas->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,

@@ -46,7 +46,7 @@ class AccesoriosController extends Controller
             'nombre' => 'required',
             'serie' => 'required',
             'marca' => 'numeric|required',
-            'modelo' => 'required',
+            'modelo' => 'numeric|required',
             'linea' => 'required',
             'registro' => 'required',
             'maquina' => 'numeric|required',
@@ -60,6 +60,10 @@ class AccesoriosController extends Controller
         }
 
         $accesorios = new Accesorios($request->all());
+        $accesorios->nombre = strtoupper($request->nombre);
+        $accesorios->serie = strtoupper($request->serie);
+        $accesorios->linea = strtoupper($request->linea);
+        $accesorios->registro= strtoupper($request->registro);
         $result = $accesorios->save();
         if($result){
             return response()->json([
@@ -102,7 +106,7 @@ class AccesoriosController extends Controller
      * @param  \App\Models\Accesorios  $accesorios
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Accesorios $accesorio)
+    public function update(Request $request, $id)
     {
         $validate = Validator::make($request->all(),[
             'nombre' => 'required',
@@ -121,8 +125,14 @@ class AccesoriosController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $accesorio = $accesorio->fill($request->all());
-        $result= $accesorio->save();
+        $accesorios = Accesorios::find($id);
+        $accesorios->fill($request->all());
+        $accesorios->nombre = strtoupper($request->nombre);
+        $accesorios->serie= strtoupper($request->serie);
+        $accesorios->linea= strtoupper($request->linea);
+        $accesorios->registro= strtoupper($request->registro);
+        $result = $accesorios->save();
+ 
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,

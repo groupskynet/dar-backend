@@ -18,12 +18,14 @@ return new class extends Migration
             $table->string('tipo', 10);
             $table->string('nombre');
             $table->string('serie');
+            $table->string('modelo');
             $table->string('linea');
             $table->string('registro');
             $table->string('placa',10)->nullable();
             $table->foreignId('marca');
             $table->foreign('marca')->references('id')->on('marcas');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

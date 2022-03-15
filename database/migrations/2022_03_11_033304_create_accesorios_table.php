@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('accesorios', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('Serie');
+            $table->string('serie');
             $table->string('linea');
             $table->string('registro');
             $table->string('modelo');
