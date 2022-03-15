@@ -114,7 +114,6 @@ class OperadoresController extends Controller
             'apellidos' => 'required',
             'cedula'=>'numeric|required',
             'telefono1'=> 'numeric|required',
-            'telefono2'=> 'numeric|required',
             'licencia'=> 'required',
             'direccion'=> 'required',
             'email'=> 'required'
@@ -127,13 +126,13 @@ class OperadoresController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $operadores = Operadores::find($id);
-        $operadores->fill($request->all());
-        $operadores->nombres = strtoupper($request->nombres);
-        $operadores->apellidos = strtoupper($request->apellidos);
-        $operadores->direccion = strtoupper($request->direccion);
-        $operadores->email= strtoupper($request->email);
-        $result = $operadores->save();
+        $operadore = Operadores::find($id);
+        $operadore->fill($request->all());
+        $operadore->nombres = strtoupper($request->nombres);
+        $operadore->apellidos = strtoupper($request->apellidos);
+        $operadore->direccion = strtoupper($request->direccion);
+        $operadore->email= strtoupper($request->email);
+        $result = $operadore->save();
 
         if($result){
             return response()->json([
