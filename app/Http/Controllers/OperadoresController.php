@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Operadores;
-use Illuminate\Database\Console\Migrations\StatusCommand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -13,22 +12,22 @@ class OperadoresController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
-        $operadores= Operadores::all(['nombres','apellidos','cedula','telefono1','telefono2','licencia','direccion','email']);
+        $operadores = Operadores::all();
         return response()->json([
-            'status'=> Response::HTTP_OK,
-            'message'=>'success',
-            'data'=>$operadores
+            'status' => Response::HTTP_OK,
+            'message' => 'success',
+            'data' => $operadores
         ], Response::HTTP_OK);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -38,51 +37,61 @@ class OperadoresController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(),[
-            'nombres'=>'required',
-            'apellidos'=>'required',
-            'cedula'=>'numeric|required',
-            'telefono1'=>'numeric|required',
-            'licencia'=>'required',
-            'direccion'=>'required',
-            'email'=>'required'
+        $validate = Validator::make($request->all(), [
+            'nombres' => 'required',
+            'apellidos' => 'required',
+            'cedula' => 'numeric|required|unique:operadores',
+            'telefono1' => 'numeric|required',
+            'licencia' => 'required|mimes:pdf',
+            'direccion' => 'required',
+            'email' => 'required'
         ]);
-        if($validate->fails()){
+
+        if ($validate->fails()) {
             return response()->json([
-                'status'=>Response::HTTP_BAD_REQUEST,
-                'message'=>'invalid data'
-            ],Response::HTTP_OK);
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'invalid data'
+            ], Response::HTTP_OK);
         }
 
-        $operadores= new Operadores($request->all());
+        $path = '';
+
+        if ($request->hasFile('licencia')) {
+            $path = $request->file('licencia')->storeAs(
+                'licencias', 'licencia-' . $request->cedula . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('licencia')->getClientOriginalName()
+            );
+        }
+
+        $operadores = new Operadores($request->all());
         $operadores->nombres = strtoupper($request->nombres);
         $operadores->apellidos = strtoupper($request->apellidos);
         $operadores->direccion = strtoupper($request->direccion);
         $operadores->email = strtoupper($request->email);
+        $operadores->licencia = $path;
         $result = $operadores->save();
 
-        if($result){
+        if ($result) {
             return response()->json([
-                'status'=>Response::HTTP_OK,
-                'message'=>'datos guardados correctamente'
+                'status' => Response::HTTP_OK,
+                'message' => 'datos guardados correctamente'
             ], Response::HTTP_OK);
         }
         return response()->json([
-            'status'=> Response::HTTP_INTERNAL_SERVER_ERROR,
-            'message'=> 'Error de servidor'
-        ], Response::HTTP_OK); 
+            'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            'message' => 'Error de servidor'
+        ], Response::HTTP_OK);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Operadores  $operadores
-     * @return \Illuminate\Http\Response
+     * @param Operadores $operadores
+     * @return Response
      */
     public function show(Operadores $operadores)
     {
@@ -92,8 +101,8 @@ class OperadoresController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Operadores  $operadores
-     * @return \Illuminate\Http\Response
+     * @param Operadores $operadores
+     * @return Response
      */
     public function edit(Operadores $operadores)
     {
@@ -103,28 +112,28 @@ class OperadoresController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Operadores  $operadores
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Operadores $operadores
+     * @return Response
      */
     public function update(Request $request, $id)
     {
-        $validate = Validator::make($request->all(),[
-            'nombres'=>'required',
+        $validate = Validator::make($request->all(), [
+            'nombres' => 'required',
             'apellidos' => 'required',
-            'cedula'=>'numeric|required',
-            'telefono1'=> 'numeric|required',
-            'telefono2'=> 'numeric|required',
-            'licencia'=> 'required',
-            'direccion'=> 'required',
-            'email'=> 'required'
+            'cedula' => 'numeric|required',
+            'telefono1' => 'numeric|required',
+            'telefono2' => 'numeric|required',
+            'licencia' => 'required',
+            'direccion' => 'required',
+            'email' => 'required'
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
-                'status'=>Response::HTTP_BAD_REQUEST,
-                'message'=> 'invalid data'
-            ],Response::HTTP_OK);
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'invalid data'
+            ], Response::HTTP_OK);
         }
 
         $operadores = Operadores::find($id);
@@ -132,42 +141,42 @@ class OperadoresController extends Controller
         $operadores->nombres = strtoupper($request->nombres);
         $operadores->apellidos = strtoupper($request->apellidos);
         $operadores->direccion = strtoupper($request->direccion);
-        $operadores->email= strtoupper($request->email);
+        $operadores->email = strtoupper($request->email);
         $result = $operadores->save();
 
-        if($result){
+        if ($result) {
             return response()->json([
-                'status'=> Response::HTTP_OK,
-                'message'=> 'Datos guardador correctamente'
-            ],Response::HTTP_OK);
+                'status' => Response::HTTP_OK,
+                'message' => 'Datos guardador correctamente'
+            ], Response::HTTP_OK);
             return response()->json([
-                'status'=> Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message'=> 'Error en el servidor'
-            ],Response::HTTP_OK);
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Error en el servidor'
+            ], Response::HTTP_OK);
         }
-        
+
     }
-    
+
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Operadores  $operadores
-     * @return \Illuminate\Http\Response
+     * @param Operadores $operadores
+     * @return Response
      */
     public function destroy($id)
     {
         $operador = Operadores::find($id);
-        if($operador){
+        if ($operador !== null) {
             $operador->delete();
             return response()->json([
-                'status'=>Response::HTTP_OK,
-                'message'=>'operador eliminado coreectamente'
+                'status' => Response::HTTP_OK,
+                'message' => 'operador eliminado coreectamente'
             ]);
-        }   
+        }
         return response()->json([
-            'status'=>Response::HTTP_INTERNAL_SERVER_ERROR,
-            'message'=>'Error en el servidor'
-        ],Response::HTTP_OK);
+            'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            'message' => 'Error en el servidor'
+        ], Response::HTTP_OK);
     }
 }
