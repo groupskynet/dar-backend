@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MaquinasController;
 use App\Http\Controllers\OperadoresController;
+use App\Http\Controllers\ClientesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,7 @@ Route::resource('marcas', MarcasController::class);
 Route::resource('maquinas', MaquinasController::class);
 Route::resource('accesorios', AccesoriosController::class);
 Route::resource('operadores', OperadoresController::class);
+Route::resource('clientes', ClientesController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
