@@ -134,7 +134,7 @@ class ClientesController extends Controller
             ],Response::HTTP_OK);
             return response()->json([
                 'status'=>Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message'=>'Errod de servidor'
+                'message'=>'Error de servidor'
             ],Response::HTTP_OK);
         }
 
