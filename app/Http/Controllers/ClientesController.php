@@ -45,7 +45,7 @@ class ClientesController extends Controller
     {
         $validate= Validator::make($request->all(),[
             'tipo'=>'required',
-            'cedula'=>'numeric|required|unique:operadores',
+            'cedula'=>'numeric|required|unique:clientes',
             'nombres'=>'required',
             'telefono1'=>'numeric|required',
             'direccion'=>'required',
@@ -102,7 +102,7 @@ class ClientesController extends Controller
     {
         $validate=Validator::make($request->all(),[
             'tipo'=>'required',
-            'cedula'=>'numeric|required|unique:operadores',
+            'cedula'=>'numeric|required|unique:clientes,cedula'.$id,
             'nombres'=>'required',
             'telefono1'=>'numeric|required',
             'direccion'=>'required',

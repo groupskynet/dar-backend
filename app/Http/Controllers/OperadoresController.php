@@ -121,7 +121,7 @@ class OperadoresController extends Controller
         $validate = Validator::make($request->all(), [
             'nombres' => 'required',
             'apellidos' => 'required',
-            'cedula' => 'numeric|required',
+            'cedula' => 'numeric|required|unique:operadores,cedula'.$id,
             'telefono1' => 'numeric|required',
             'telefono2' => 'numeric|required',
             'licencia' => 'required',
