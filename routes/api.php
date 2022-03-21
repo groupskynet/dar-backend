@@ -9,6 +9,7 @@ use App\Http\Controllers\OperadoresController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\GastosController;
+use App\Http\Controllers\OrdenServicioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,7 @@ Route::resource('operadores', OperadoresController::class);
 Route::resource('clientes', ClientesController::class);
 Route::resource('proveedores', ProveedoresController::class);
 Route::resource('gastos', GastosController::class);
+Route::resource('ordenServicio', OrdenServicioController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
