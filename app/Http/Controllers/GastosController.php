@@ -16,7 +16,7 @@ class GastosController extends Controller
      */
     public function index()
     {
-        $gastos = Gastos::with('maquina')->get();
+        $gastos = Gastos::with('maquina')->paginate(10);
         return response()->json([
             'status'=> Response::HTTP_OK,
             'message'=>'success',

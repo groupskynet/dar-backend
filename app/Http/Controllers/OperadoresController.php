@@ -16,7 +16,7 @@ class OperadoresController extends Controller
      */
     public function index()
     {
-        $operadores = Operadores::all();
+        $operadores = Operadores::paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',

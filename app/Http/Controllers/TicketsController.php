@@ -16,7 +16,7 @@ class TicketsController extends Controller
      */
     public function index()
     {
-        $tickets=Tickets::with('cliente','maquina','accesorio')->get();
+        $tickets=Tickets::with('cliente','maquina','accesorio')->paginate(10);
         return response()->json([
             'status'=>Response::HTTP_OK,
             'message'=>'success',

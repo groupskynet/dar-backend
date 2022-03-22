@@ -17,7 +17,7 @@ class MarcasController extends Controller
      */
     public function index()
     {
-        $marcas = Marcas::all(['id', 'nombre']);
+        $marcas = Marcas::paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',

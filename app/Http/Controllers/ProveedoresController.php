@@ -16,7 +16,7 @@ class ProveedoresController extends Controller
      */
     public function index()
     {
-         $proveedores=Proveedores::all();
+         $proveedores=Proveedores::paginate(10);
         return response()->json([
             'status'=> Response::HTTP_OK,
             'message'=>'succes',

@@ -16,7 +16,7 @@ class OrdenServicioController extends Controller
      */
     public function index()
     {
-        $ordenServicio = OrdenServicio::with('cliente','maquina')->get();
+        $ordenServicio = OrdenServicio::with('cliente','maquina')->paginate(10);
         return response()->json([
             'status'=> Response::HTTP_OK,
             'message'=>'success',

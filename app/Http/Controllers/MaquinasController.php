@@ -16,7 +16,7 @@ class MaquinasController extends Controller
      */
     public function index()
     {
-        $maquinas = Maquinas::with('marca')->get();
+        $maquinas = Maquinas::with('marca')->paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
