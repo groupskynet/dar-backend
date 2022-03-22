@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Marcas;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class MarcasController extends Controller
@@ -13,11 +13,11 @@ class MarcasController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index()
     {
-        $marcas = Marcas::all(['id','nombre']);
+        $marcas = Marcas::all(['id', 'nombre']);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -29,26 +29,26 @@ class MarcasController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
     public function store(Request $request)
-   {
-        $validate = Validator::make($request->all(),[
+    {
+        $validate = Validator::make($request->all(), [
             'nombre' => 'required'
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
-                'status' =>  Response::HTTP_BAD_REQUEST,
+                'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'invalid data'
-            ],Response::HTTP_OK);
+            ], Response::HTTP_OK);
         }
 
-        $marca= new Marcas();
+        $marca = new Marcas();
         $marca->nombre = strtoupper($request->nombre);
-        $result= $marca->save();
-        if($result){
+        $result = $marca->save();
+        if ($result) {
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardados correctamente'
@@ -63,27 +63,27 @@ class MarcasController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
      */
     public function update(Request $request, $id)
     {
-         $validate = Validator::make($request->all(),[
+        $validate = Validator::make($request->all(), [
             'nombre' => 'required'
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
-                'status' =>  Response::HTTP_BAD_REQUEST,
+                'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'invalid data'
-            ],Response::HTTP_OK);
+            ], Response::HTTP_OK);
         }
 
-        $marca= Marcas::find($id);
+        $marca = Marcas::find($id);
         $marca->nombre = strtoupper($request->nombre);
-        $result= $marca->save();
-        if($result){
+        $result = $marca->save();
+        if ($result) {
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardados correctamente'
@@ -99,13 +99,13 @@ class MarcasController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return JsonResponse
      */
     public function destroy($id)
     {
         $marca = Marcas::find($id);
-        if($marca){
+        if ($marca) {
             $marca->delete();
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -115,6 +115,6 @@ class MarcasController extends Controller
         return response()->json([
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'message' => 'Error del servidor'
-        ],Response::HTTP_OK);
+        ], Response::HTTP_OK);
     }
 }
