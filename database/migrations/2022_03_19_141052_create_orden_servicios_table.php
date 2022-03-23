@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('orden_servicios', function (Blueprint $table) {
             $table->id();
-            $table->string('horometroInicial');
-            $table->string('horasPromedio');
-            $table->string('valorXhora');
-            $table->string('Descuento')->nullable();
+            $table->float('horometroInicial');
+            $table->float('horasPromedio');
+            $table->float('valorXhora')->default(0);
+            $table->float('Descuento')->nullable();
             $table->string('pagare');
-            $table->string('valorIda');
-            $table->string('valorVuelta')->nullable();
+            $table->float('valorIda');
+            $table->float('valorVuelta')->nullable();
             $table->foreignId('maquina');
             $table->foreign('maquina')->references('id')->on('maquinas');
             $table->foreignId('cliente');
@@ -29,9 +29,19 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();  
         });
-    }
 
-    /**
+         Schema::create('rel_orden_servicio', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('accesorio')->nullable();
+            $table->foreign('accesorio')->references('id')->on('accesorios');
+            $table->foreignId('orden')->nullable();
+            $table->foreign('orden')->references('id')->on('orden_servicios');
+            $table->float('valorXhoraXaccesorio');
+            $table->timestamps();
+        });
+ 
+    }
+          /**
      * Reverse the migrations.
      *
      * @return void

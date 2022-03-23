@@ -36,4 +36,8 @@ class OrdenServicio extends Model
         return $this->belongsTo(Maquinas::class,'maquina','id');
     }
 
+    public function accesorio(){
+        return $this->belongsToMany(Accesorios::class,'rel_orden_servicio', 'orden', 'accesorio');
+    }
+
 }

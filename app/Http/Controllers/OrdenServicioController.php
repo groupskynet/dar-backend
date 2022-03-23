@@ -16,7 +16,7 @@ class OrdenServicioController extends Controller
      */
     public function index()
     {
-        $ordenServicio = OrdenServicio::with('cliente','maquina')->paginate(10);
+        $ordenServicio = OrdenServicio::with('cliente','maquina','accesorio')->paginate(10);
         return response()->json([
             'status'=> Response::HTTP_OK,
             'message'=>'success',
@@ -71,8 +71,14 @@ class OrdenServicioController extends Controller
         $ordenServicio = new OrdenServicio($request->all());
         $ordenServicio->pagare = $path;
         $result = $ordenServicio->save();
-
+       
         if($result){
+            $arr =  isset($request->accesorios) ? $request->accesorios : [];
+            $relations = [];
+            foreach($arr as $value){
+                $relations[$value['id']] = ['valorXhoraXaccesorio' => $value['valor']];
+            }
+            $ordenServicio->accesorio()->sync($relations);
             return response()->json([
                 'status'=> Response::HTTP_OK,
                 'message'=> 'DAtos guardados correctamente'
