@@ -12,7 +12,7 @@ class MaquinasController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -29,7 +29,7 @@ class MaquinasController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -73,7 +73,7 @@ class MaquinasController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Maquinas  $maquinas
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(Maquinas $maquinas)
     {
@@ -85,7 +85,7 @@ class MaquinasController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Maquinas  $maquinas
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -112,7 +112,7 @@ class MaquinasController extends Controller
         $maquinas->nombre = strtoupper($request->nombre);
         $maquinas->serie = strtoupper($request->serie);
         $maquinas->linea = strtoupper($request->linea);
-        $maquinas->resgitro = strtoupper($request->registro);
+        $maquinas->registro = strtoupper($request->registro);
         $result= $maquinas->save();
         if($result){
             return response()->json([
@@ -130,7 +130,7 @@ class MaquinasController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Maquinas  $maquinas
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

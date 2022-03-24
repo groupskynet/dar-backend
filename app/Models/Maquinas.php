@@ -24,7 +24,8 @@ class Maquinas extends Model
     ];
 
     public function marca(){
-        return $this->belongsTo(Marcas::class, 'marca', 'id');
+        return $this->belongsTo(Marcas::class, 'marca', 'id')
+            ->withTrashed();
     }
 
 }
