@@ -119,7 +119,7 @@ class MarcasController extends Controller
         $maquina = Maquinas::where('marca', $marca->id)->first();
         if($maquina){
             return response()->json([
-                'status' => Response::HTTP_OK,
+                'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Error, No se puede eliminar marcas que tengan acesorios asociados.'
             ]);
         }
