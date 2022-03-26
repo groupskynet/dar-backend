@@ -25,6 +25,19 @@ class GastosController extends Controller
 
     }
 
+    public function all()
+    {
+        $gastos = Gastos::with('maquina')->all();
+        return response()->json([
+            'status'=> Response::HTTP_OK,
+            'message'=>'success',
+            'data'=>$gastos
+        ],Response::HTTP_OK);
+
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *

@@ -25,6 +25,18 @@ class ClientesController extends Controller
         ],Response::HTTP_OK);
     }
 
+    public function all()
+    {
+        $clientes=Clientes::all();
+        return response()->json([
+            'status'=> Response::HTTP_OK,
+            'message'=>'succes',
+            'data'=>$clientes
+        ],Response::HTTP_OK);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *

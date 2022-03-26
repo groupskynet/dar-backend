@@ -24,6 +24,18 @@ class OrdenServicioController extends Controller
         ],Response::HTTP_OK);
     }
 
+    public function all()
+    {
+        $ordenServicio = OrdenServicio::with('cliente','maquina','accesorio')->all();
+        return response()->json([
+            'status'=> Response::HTTP_OK,
+            'message'=>'success',
+            'data'=> $ordenServicio
+        ],Response::HTTP_OK);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *

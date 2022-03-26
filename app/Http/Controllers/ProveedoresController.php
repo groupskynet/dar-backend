@@ -25,6 +25,19 @@ class ProveedoresController extends Controller
  
     }
 
+    public function all()
+    {
+         $proveedores=Proveedores::all();
+        return response()->json([
+            'status'=> Response::HTTP_OK,
+            'message'=>'succes',
+            'data'=>$proveedores
+        ],Response::HTTP_OK);
+ 
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *

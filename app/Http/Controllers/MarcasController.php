@@ -25,6 +25,16 @@ class MarcasController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function all()
+    {
+        $marcas = Marcas::all();
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'success',
+            'data' => $marcas
+        ], Response::HTTP_OK);
+    }
+
 
     /**
      * Store a newly created resource in storage.

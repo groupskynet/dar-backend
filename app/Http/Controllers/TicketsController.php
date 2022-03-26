@@ -23,6 +23,16 @@ class TicketsController extends Controller
             'data'=>$tickets
         ],Response::HTTP_OK);
     }
+    public function all()
+    {
+        $tickets=Tickets::with('cliente','maquina','accesorio')->all();
+        return response()->json([
+            'status'=>Response::HTTP_OK,
+            'message'=>'success',
+            'data'=>$tickets
+        ],Response::HTTP_OK);
+    }
+
 
     /**
      * Show the form for creating a new resource.

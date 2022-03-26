@@ -23,6 +23,16 @@ class OperadoresController extends Controller
             'data' => $operadores
         ], Response::HTTP_OK);
     }
+    public function all()
+    {
+        $operadores = Operadores::all();
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'success',
+            'data' => $operadores
+        ], Response::HTTP_OK);
+    }
+
 
     /**
      * Show the form for creating a new resource.

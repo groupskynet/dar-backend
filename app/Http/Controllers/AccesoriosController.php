@@ -24,6 +24,18 @@ class AccesoriosController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function all()
+    {
+        $accesorios= Accesorios::with('marca','maquina')->all();
+        return response()->json([ 
+            'status' => Response::HTTP_OK,
+            'message' => 'success',
+            'data'=> $accesorios
+        ], Response::HTTP_OK);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *

@@ -23,6 +23,16 @@ class MaquinasController extends Controller
             'data' => $maquinas
         ], Response::HTTP_OK);
     }
+    public function all()
+    {
+        $maquinas= Maquinas::all();
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'success',
+            'data' => $maquinas
+        ], Response::HTTP_OK);
+    }
+
 
 
     /**
