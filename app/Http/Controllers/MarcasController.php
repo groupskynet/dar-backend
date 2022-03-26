@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Marcas;
+use App\Models\Maquinas;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -115,11 +116,18 @@ class MarcasController extends Controller
     public function destroy($id)
     {
         $marca = Marcas::find($id);
+        $maquina = Maquinas::where('marca', $marca->id)->first();
+        if($maquina){
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Error, No se puede eliminar marcas que tengan acesorios asociados.'
+            ]);
+        }
         if ($marca) {
             $marca->delete();
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'marca eliminada correctamente'
+                'message' => 'Marca eliminada correctamente'
             ]);
         }
         return response()->json([

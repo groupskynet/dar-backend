@@ -48,7 +48,7 @@ class OperadoresController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -124,17 +124,16 @@ class OperadoresController extends Controller
      *
      * @param Request $request
      * @param Operadores $operadores
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
         $validate = Validator::make($request->all(), [
             'nombres' => 'required',
             'apellidos' => 'required',
-            'cedula' => 'numeric|required|unique:operadores,cedula'.$id,
+            'cedula' => 'numeric|required|unique:operadores,cedula',
             'telefono1' => 'numeric|required',
             'telefono2' => 'numeric|required',
-            'licencia' => 'required',
             'direccion' => 'required',
             'email' => 'required'
         ]);
@@ -172,7 +171,7 @@ class OperadoresController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Operadores $operadores
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
