@@ -60,7 +60,7 @@ class ProveedoresController extends Controller
             'tipo'=>'required',
             'cedula'=>'numeric|required|unique:proveedores',
             'nombres'=>'required',
-            'telefono1'=>'numeric|required',
+            'telefono'=>'numeric|required',
             'direccion'=>'required',
             'email'=>'required'
         ]);
@@ -126,9 +126,9 @@ class ProveedoresController extends Controller
     {
         $validate = Validator::make($request->all(),[
             'tipo'=>'required',
-            'cedula'=>'numeric|required|unique:proveedores,cedula'.$id,
+            'cedula'=>'numeric|required',
             'nombres'=>'required',
-            'telefono1'=>'numeric|required',
+            'telefono'=>'numeric|required',
             'direccion'=>'required',
             'email'=>'required'      
         ]);
@@ -142,7 +142,7 @@ class ProveedoresController extends Controller
 
         $proveedores=Proveedores::find($id);
         $proveedores->fill($request->all());
-        $proveedores->nombres=strtoupper($request->nombre);
+        $proveedores->nombres=strtoupper($request->nombres);
         $proveedores->direccion=strtoupper($request->direccion);
         $proveedores->email=strtoupper($request->email);
         

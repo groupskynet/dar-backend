@@ -59,7 +59,7 @@ class ClientesController extends Controller
             'tipo'=>'required',
             'cedula'=>'numeric|required|unique:clientes',
             'nombres'=>'required',
-            'telefono1'=>'numeric|required',
+            'telefono'=>'numeric|required',
             'direccion'=>'required',
             'email'=>'required'
         ]);
@@ -114,9 +114,9 @@ class ClientesController extends Controller
     {
         $validate=Validator::make($request->all(),[
             'tipo'=>'required',
-            'cedula'=>'numeric|required|unique:clientes,cedula'.$id,
+            'cedula'=>'numeric|required',
             'nombres'=>'required',
-            'telefono1'=>'numeric|required',
+            'telefono'=>'numeric|required',
             'direccion'=>'required',
             'email'=>'required'      
         ]);
@@ -124,13 +124,13 @@ class ClientesController extends Controller
         if($validate->fails()){
             return response()->json([
                 'status'=>Response::HTTP_BAD_REQUEST,
-                'message'=>'invalid data'
+                'message'=> $validate->failed()
             ],Response::HTTP_OK);
         }
 
         $clientes=Clientes::find($id);
         $clientes->fill($request->all());
-        $clientes->nombres=strtoupper($request->nombre);
+        $clientes->nombres=strtoupper($request->nombres);
         $clientes->direccion=strtoupper($request->direccion);
         $clientes->email=strtoupper($request->email);
         

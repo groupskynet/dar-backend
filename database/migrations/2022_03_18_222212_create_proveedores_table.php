@@ -18,9 +18,8 @@ return new class extends Migration
             $table->string('tipo');
             $table->string('cedula');
             $table->string('nombres');
-            $table->string('telefono1');
-            $table->string('telefono2')->nullable();
-            $table->string('Direccion');
+            $table->string('telefono');
+            $table->string('direccion');
             $table->string('email');
             $table->string('nit')->nullable();
             $table->string('razonSocial')->nullable();
