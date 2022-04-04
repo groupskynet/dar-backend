@@ -13,7 +13,7 @@ class OrdenServicio extends Model
 
     protected $table = 'orden_servicios';
 
-    protected $fillable =[
+    protected $fillable = [
 
         'id',
         'cliente',
@@ -28,16 +28,20 @@ class OrdenServicio extends Model
 
     ];
 
-    public function cliente(){
-        return $this->belongsTo(Clientes::class,'cliente','id');
+    public function cliente()
+    {
+        return $this->belongsTo(Clientes::class, 'cliente', 'id')->withTrashed();
     }
 
-    public function maquina(){
-        return $this->belongsTo(Maquinas::class,'maquina','id');
+    public function maquina()
+    {
+        return $this->belongsTo(Maquinas::class, 'maquina', 'id')->withTrashed();
     }
 
-    public function accesorio(){
-        return $this->belongsToMany(Accesorios::class,'rel_orden_servicio', 'orden', 'accesorio');
+    public function accesorios()
+    {
+        return $this->belongsToMany(Accesorios::class, 'rel_orden_servicio', 'orden', 'accesorio')
+            ->withPivot('valorXhora')->withTrashed();
     }
 
 }

@@ -29,7 +29,7 @@ Route::resource('operadores', OperadoresController::class);
 Route::resource('clientes', ClientesController::class);
 Route::resource('proveedores', ProveedoresController::class);
 Route::resource('gastos', GastosController::class);
-Route::resource('ordenServicio', OrdenServicioController::class);
+Route::resource('orden-servicio', OrdenServicioController::class);
 Route::resource('tickets', TicketsController::class);
 
 Route::group(['prefix' => 'literales'], function () {

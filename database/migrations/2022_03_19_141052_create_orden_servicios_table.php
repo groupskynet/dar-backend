@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -27,21 +26,22 @@ return new class extends Migration
             $table->foreignId('cliente');
             $table->foreign('cliente')->references('id')->on('clientes');
             $table->timestamps();
-            $table->softDeletes();  
+            $table->softDeletes();
         });
 
-         Schema::create('rel_orden_servicio', function (Blueprint $table) {
+        Schema::create('rel_orden_servicio', function (Blueprint $table) {
             $table->id();
             $table->foreignId('accesorio')->nullable();
             $table->foreign('accesorio')->references('id')->on('accesorios');
             $table->foreignId('orden')->nullable();
             $table->foreign('orden')->references('id')->on('orden_servicios');
-            $table->float('valorXhoraXaccesorio');
+            $table->float('valorXhora');
             $table->timestamps();
         });
- 
+
     }
-          /**
+
+    /**
      * Reverse the migrations.
      *
      * @return void

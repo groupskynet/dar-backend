@@ -28,4 +28,8 @@ class Maquinas extends Model
             ->withTrashed();
     }
 
+    public function accesorios() {
+        return $this->hasMany(Accesorios::class, 'maquina', 'id');
+    }
+
 }

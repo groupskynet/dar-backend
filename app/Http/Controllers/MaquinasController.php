@@ -9,14 +9,10 @@ use Illuminate\Support\Facades\Validator;
 
 class MaquinasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function index()
     {
-        $maquinas = Maquinas::with('marca')->paginate(10);
+        $maquinas = Maquinas::with('marca', 'accesorios')->paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -25,7 +21,7 @@ class MaquinasController extends Controller
     }
     public function all()
     {
-        $maquinas= Maquinas::all();
+        $maquinas= Maquinas::with('accesorios')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -35,12 +31,6 @@ class MaquinasController extends Controller
 
 
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
         $validate = Validator::make($request->all(),[
@@ -60,16 +50,17 @@ class MaquinasController extends Controller
                 'message' => 'invalid data'
             ],Response::HTTP_OK);
         }
-        $maquinas = new Maquinas($request->all());
-        $maquinas->nombre = strtoupper($request->nombre);
-        $maquinas->serie = strtoupper($request->serie);
-        $maquinas->linea = strtoupper($request->linea);
-        $maquinas->registro = strtoupper($request->registro);
-        $result= $maquinas->save();
+        $maquina = new Maquinas($request->all());
+        $maquina->nombre = strtoupper($request->nombre);
+        $maquina->serie = strtoupper($request->serie);
+        $maquina->linea = strtoupper($request->linea);
+        $maquina->registro = strtoupper($request->registro);
+        $result= $maquina->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Datos guardados correctamente'
+                'message' => 'Datos guardados correctamente',
+                'data' => $maquina
             ], Response::HTTP_OK);
         }
         return response()->json([
@@ -79,24 +70,6 @@ class MaquinasController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Maquinas  $maquinas
-     * @return Response
-     */
-    public function show(Maquinas $maquinas)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Maquinas  $maquinas
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, $id)
     {
 
@@ -117,17 +90,18 @@ class MaquinasController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $maquinas = Maquinas:: find($id);
-        $maquinas->fill($request->all());
-        $maquinas->nombre = strtoupper($request->nombre);
-        $maquinas->serie = strtoupper($request->serie);
-        $maquinas->linea = strtoupper($request->linea);
-        $maquinas->registro = strtoupper($request->registro);
-        $result= $maquinas->save();
+        $maquina = Maquinas:: find($id);
+        $maquina->fill($request->all());
+        $maquina->nombre = strtoupper($request->nombre);
+        $maquina->serie = strtoupper($request->serie);
+        $maquina->linea = strtoupper($request->linea);
+        $maquina->registro = strtoupper($request->registro);
+        $result= $maquina->save();
         if($result){
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Datos guardados correctamente'
+                'message' => 'Datos guardados correctamente',
+                'data' => $maquina
             ], Response::HTTP_OK);
         }
         return response()->json([
@@ -136,12 +110,7 @@ class MaquinasController extends Controller
         ], Response::HTTP_OK);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Maquinas  $maquinas
-     * @return Response
-     */
+
     public function destroy($id)
     {
         $maquina = Maquinas::find($id);
