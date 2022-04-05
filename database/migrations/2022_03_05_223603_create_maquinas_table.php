@@ -21,9 +21,12 @@ return new class extends Migration
             $table->string('modelo');
             $table->string('linea');
             $table->string('registro');
+            $table->string('estado')->default('ACTIVA');
             $table->string('placa',10)->nullable();
             $table->foreignId('marca');
             $table->foreign('marca')->references('id')->on('marcas');
+            $table->foreignId('operador')->nullable();
+            $table->foreign('operador')->references('id')->on('operadores');
             $table->timestamps();
             $table->softDeletes();
         });

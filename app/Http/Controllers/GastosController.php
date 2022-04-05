@@ -36,27 +36,9 @@ class GastosController extends Controller
 
     }
 
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $validate=Validator::make($request->all(),[
+        $validate = Validator::make($request->all(),[
             'maquina'=>'numeric|required',
             'valor'=>'required',
             'descripcion'=>'required',
@@ -65,7 +47,8 @@ class GastosController extends Controller
         if($validate->fails()){
             return response()->json([
                 'status'=>Response::HTTP_BAD_REQUEST,
-                'message'=>'invalid data'
+                'message'=>'invalid data',
+                'data' => $validate->failed()
             ],Response::HTTP_OK);
         }
         $path = '';

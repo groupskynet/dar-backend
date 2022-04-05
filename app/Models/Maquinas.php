@@ -18,6 +18,8 @@ class Maquinas extends Model
         'marca',
         'modelo',
         'linea',
+        'estado',
+        'operador',
         'registro',
         'placa',
         'tipo'
@@ -31,5 +33,10 @@ class Maquinas extends Model
     public function accesorios() {
         return $this->hasMany(Accesorios::class, 'maquina', 'id');
     }
+
+    public function operador() {
+        return $this->belongsTo(Operadores::class, 'operador', 'id')->withTrashed();
+    }
+
 
 }

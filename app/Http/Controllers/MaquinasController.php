@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Maquinas;
+use App\Models\Operadores;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +13,7 @@ class MaquinasController extends Controller
 
     public function index()
     {
-        $maquinas = Maquinas::with('marca', 'accesorios')->paginate(10);
+        $maquinas = Maquinas::with('marca', 'accesorios','operador')->paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -21,7 +22,7 @@ class MaquinasController extends Controller
     }
     public function all()
     {
-        $maquinas= Maquinas::with('accesorios')->get();
+        $maquinas= Maquinas::with('accesorios','operador')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -29,7 +30,44 @@ class MaquinasController extends Controller
         ], Response::HTTP_OK);
     }
 
+    public function asignarOperador (Request $request)
+    {
+        $validate = Validator::make($request->all(),[
+            'maquina'=>'numeric|required',
+            'operador'=>'numeric|required'
+        ]);
 
+        if($validate->fails()){
+            return response()->json([
+                'status'=> Response::HTTP_BAD_REQUEST,
+                'message'=> 'invalid data',
+                'data'=> $validate->errors()
+            ],Response::HTTP_OK);
+        }
+        $maquina = Maquinas::find($request->maquina);
+        $operador = Operadores::find($request->operador);
+        if(!$maquina && !$operador){
+            return response()->json([
+                'status'=>Response::HTTP_BAD_REQUEST,
+                'message'=>'invalid data'
+            ],Response::HTTP_OK);
+        }
+        $maquina->operador = $request->operador;
+        $result = $maquina->save();
+
+        if($result){
+            $maq = Maquinas::with('operador')->where('id', $maquina->id)->first();
+            return response()->json([
+                'status'=> Response::HTTP_OK,
+                'message'=> 'Operador Asignado Correctamente',
+                'data'=>$maq
+            ],Response::HTTP_OK);
+        }
+        return response()->json([
+            'status'=>Response::HTTP_INTERNAL_SERVER_ERROR,
+            'message'=>'Error de Servidor'
+        ],Response::HTTP_OK);
+    }
 
     public function store(Request $request)
     {
