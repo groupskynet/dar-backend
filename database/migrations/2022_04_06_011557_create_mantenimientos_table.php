@@ -17,10 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('tipo');
             $table->string('descripcion');
-            $table->float('horometro');
+            $table->double('horometro');
             $table->string('modalidad');
-            $table->float('costo');
-            $table->float('abono')->nullable();
+            $table->double('costo');
+            $table->double('abono')->nullable();
             $table->string('soporte');
             $table->foreignId('maquina');
             $table->foreign('maquina')->references('id')->on('maquinas');

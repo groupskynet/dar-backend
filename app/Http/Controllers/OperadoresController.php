@@ -77,18 +77,19 @@ class OperadoresController extends Controller
             );
         }
 
-        $operadores = new Operadores($request->all());
-        $operadores->nombres = strtoupper($request->nombres);
-        $operadores->apellidos = strtoupper($request->apellidos);
-        $operadores->direccion = strtoupper($request->direccion);
-        $operadores->email = strtoupper($request->email);
-        $operadores->licencia = $path;
-        $result = $operadores->save();
+        $operador = new Operadores($request->all());
+        $operador->nombres = strtoupper($request->nombres);
+        $operador->apellidos = strtoupper($request->apellidos);
+        $operador->direccion = strtoupper($request->direccion);
+        $operador->email = strtoupper($request->email);
+        $operador->licencia = $path;
+        $result = $operador->save();
 
         if ($result) {
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'datos guardados correctamente'
+                'message' => 'datos guardados correctamente',
+                'data' => $operador
             ], Response::HTTP_OK);
         }
         return response()->json([
@@ -145,18 +146,19 @@ class OperadoresController extends Controller
             ], Response::HTTP_OK);
         }
 
-        $operadores = Operadores::find($id);
-        $operadores->fill($request->all());
-        $operadores->nombres = strtoupper($request->nombres);
-        $operadores->apellidos = strtoupper($request->apellidos);
-        $operadores->direccion = strtoupper($request->direccion);
-        $operadores->email = strtoupper($request->email);
-        $result = $operadores->save();
+        $operador= Operadores::find($id);
+        $operador->fill($request->all());
+        $operador->nombres = strtoupper($request->nombres);
+        $operador->apellidos = strtoupper($request->apellidos);
+        $operador->direccion = strtoupper($request->direccion);
+        $operador->email = strtoupper($request->email);
+        $result = $operador->save();
 
         if ($result) {
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Datos guardador correctamente'
+                'message' => 'Datos guardador correctamente',
+                'data' => $operador 
             ], Response::HTTP_OK);
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
