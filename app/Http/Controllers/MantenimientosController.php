@@ -81,7 +81,7 @@ class MantenimientosController extends Controller
         if($resullt){
             return response()->json([
                 'status'=>Response::HTTP_OK,
-                'mesage'=>'Datos guardados correctamente'
+                'message'=>'Datos guardados correctamente'
             ], Response::HTTP_OK);
         }
         return response()->json([
