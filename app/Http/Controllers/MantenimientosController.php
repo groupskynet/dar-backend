@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mantenimiento;
 use App\Models\Mantenimientos;
 use App\Models\Proveedores;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Console;
+use SebastianBergmann\Environment\Console as EnvironmentConsole;
 
 class MantenimientosController extends Controller
 {
@@ -48,13 +49,14 @@ class MantenimientosController extends Controller
             'tipo'=>'required',
             'maquina'=>'numeric|required',
             'proveedor'=> 'numeric|required',
-            'horometro'=>'numeric|required',
             'descripcion'=>'required',
+            'horometro'=>'numeric|required',
             'modalidad'=>'required',
             'costo'=>'required',
             'soporte'=>'required|mimes:pdf'
 
         ]);
+
         if($validate->fails()){
             return response()->json([
                 'status'=>Response::HTTP_BAD_REQUEST,
@@ -73,7 +75,7 @@ class MantenimientosController extends Controller
 
         $mantenimiento = new Mantenimientos($request->all());
         $mantenimiento->soporte = $path;
-        $mantenimiento->descripcion = strtoupper($request->decripcion);
+        $mantenimiento->descripcion = strtoupper($request->descripcion);
         $resullt = $mantenimiento->save();
 
         if($resullt){

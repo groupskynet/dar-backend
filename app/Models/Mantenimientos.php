@@ -16,7 +16,7 @@ class Mantenimientos extends Model
         'tipo',
         'maquina',
         'proveedor',
-        'descricion',
+        'descripcion',
         'horometro',
         'modalidad',
         'costo',

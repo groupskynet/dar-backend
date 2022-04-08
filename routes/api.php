@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccesoriosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\GastosController;
+use App\Http\Controllers\MantenimientosController;
 use App\Http\Controllers\MaquinasController;
 use App\Http\Controllers\MarcasController;
 use App\Http\Controllers\OperadoresController;
@@ -32,6 +33,7 @@ Route::resource('proveedores', ProveedoresController::class);
 Route::resource('gastos', GastosController::class);
 Route::resource('orden-servicio', OrdenServicioController::class);
 Route::resource('tickets', TicketsController::class);
+Route::resource('mantenimientos', MantenimientosController::class);
 Route::post('maquina/asignar', [MaquinasController::class, 'asignarOperador']);
 
 Route::group(['prefix' => 'literales'], function () {
