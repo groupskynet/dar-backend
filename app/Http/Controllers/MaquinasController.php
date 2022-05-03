@@ -52,6 +52,9 @@ class MaquinasController extends Controller
                 'message'=>'invalid data'
             ],Response::HTTP_OK);
         }
+        Maquinas::where('operador', $operador)->each(function($item){
+
+        });
         $maquina->operador = $request->operador;
         $result = $maquina->save();
 
@@ -79,13 +82,14 @@ class MaquinasController extends Controller
             'linea' => 'required',
             'registro' => 'required',
             'tipo' => 'required',
+            'horometro' => 'numeric|required',
         ]);
 
         if($validate->fails()){
-            return response()->json($validate->errors());
             return response()->json([
                 'status' =>  Response::HTTP_BAD_REQUEST,
-                'message' => 'invalid data'
+                'message' => $validate->errors()->first(),
+                'data' => $validate->errors()
             ],Response::HTTP_OK);
         }
         $maquina = new Maquinas($request->all());
@@ -116,6 +120,7 @@ class MaquinasController extends Controller
             'serie' => 'required',
             'marca' => 'numeric|required',
             'modelo' => 'numeric|required',
+            'horometro' => 'numeric|required',
             'linea' => 'required',
             'registro' => 'required',
             'tipo' => 'required',
@@ -128,12 +133,15 @@ class MaquinasController extends Controller
             ],Response::HTTP_OK);
         }
 
-        $maquina = Maquinas:: find($id);
+
+        $maquina = Maquinas::find($id);
+        $horometro = $maquina->horometro;
         $maquina->fill($request->all());
         $maquina->nombre = strtoupper($request->nombre);
         $maquina->serie = strtoupper($request->serie);
         $maquina->linea = strtoupper($request->linea);
         $maquina->registro = strtoupper($request->registro);
+        $maquina->horometro = $horometro;
         $result= $maquina->save();
         if($result){
             return response()->json([

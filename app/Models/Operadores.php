@@ -11,7 +11,7 @@ class Operadores extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable=[
+    protected $fillable   = [
         'id',
         'cedula',
         'nombres',

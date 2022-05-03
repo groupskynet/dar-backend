@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -19,10 +18,11 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('serie');
             $table->string('modelo');
+            $table->double('horometro')->default('0');
             $table->string('linea');
             $table->string('registro');
             $table->string('estado')->default('ACTIVA');
-            $table->string('placa',10)->nullable();
+            $table->string('placa', 10)->nullable();
             $table->foreignId('marca');
             $table->foreign('marca')->references('id')->on('marcas');
             $table->foreignId('operador')->nullable();

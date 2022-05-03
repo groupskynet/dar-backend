@@ -17,6 +17,7 @@ class Maquinas extends Model
         'serie',
         'marca',
         'modelo',
+        'horometro',
         'linea',
         'estado',
         'operador',
@@ -25,16 +26,19 @@ class Maquinas extends Model
         'tipo'
     ];
 
-    public function marca(){
+    public function marca()
+    {
         return $this->belongsTo(Marcas::class, 'marca', 'id')
             ->withTrashed();
     }
 
-    public function accesorios() {
+    public function accesorios()
+    {
         return $this->hasMany(Accesorios::class, 'maquina', 'id');
     }
 
-    public function operador() {
+    public function operador()
+    {
         return $this->belongsTo(Operadores::class, 'operador', 'id')->withTrashed();
     }
 

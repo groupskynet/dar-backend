@@ -19,12 +19,13 @@ return new class extends Migration {
             $table->float('valorXhora')->default(0);
             $table->float('Descuento')->nullable();
             $table->string('pagare');
-            $table->float('valorIda');
-            $table->float('valorVuelta')->nullable();
+            $table->float('valorIda')->default(0);
+            $table->float('valorVuelta')->default(0);
             $table->foreignId('maquina');
             $table->foreign('maquina')->references('id')->on('maquinas');
             $table->foreignId('cliente');
             $table->foreign('cliente')->references('id')->on('clientes');
+            $table->string('estado')->default('PENDIENTE');
             $table->timestamps();
             $table->softDeletes();
         });

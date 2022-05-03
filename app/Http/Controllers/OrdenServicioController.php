@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Maquinas;
+use App\Models\Operadores;
+use App\Models\Tickets;
 use App\Models\OrdenServicio;
+use App\Rules\MaquinaAsociadaConEstadoPendiente;
+use App\Rules\OrdenConTicketsAsociados;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -34,7 +40,7 @@ class OrdenServicioController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'cliente' => 'numeric|required',
-            'maquina' => 'numeric|required',
+            'maquina' => ['numeric', 'required', new MaquinaAsociadaConEstadoPendiente()],
             'horometroInicial' => 'required',
             'horasPromedio' => 'required',
             'valorXhora' => 'required',
@@ -43,10 +49,10 @@ class OrdenServicioController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return response()->json($validate->errors());
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'invalid data'
+                'message' => 'invalid data',
+                'errors' => $validate->errors()
             ], Response::HTTP_OK);
         }
 
@@ -96,21 +102,60 @@ class OrdenServicioController extends Controller
         ]);
     }
 
+    public function buscarOrdenDeServicioActiva($operador)
+    {
+        $modelo = Operadores::find($operador);
+
+        if (!$modelo) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'El operador que esta intentando buscar no se encuentra '
+            ]);
+        }
+
+        $orden = OrdenServicio::with('accesorios', 'cliente', 'maquina', 'tickets.operador')
+            ->whereHas('maquina', function (Builder $query) use ($operador) {
+                $query->where('operador', $operador);
+            })->where('estado', 'PENDIENTE')->first();
+
+        if (!$orden)
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => "El Operador $modelo->nombres, no se encuentra con ordenes de servicio asociadas actualmente."
+            ]);
+
+        $maquina = Maquinas::find($orden->maquina);
+
+        $horometro = count($orden->tickets) > 0 ? $orden->tickets[count($orden->tickets) - 1]->horometroFinal : $maquina->horometro;
+
+        $orden->numero_orden = 'ORD-' . str_pad($orden->id, 4, '0', STR_PAD_LEFT);
+
+        $orden->horometro = $horometro;
+
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'Orden de Servicio Encontrada Correctamente.',
+            'data' => $orden
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $validate = Validator::make($request->all(), [
+            'id' => [new OrdenConTicketsAsociados()],
             'cliente' => 'numeric|required',
-            'maquina' => 'numeric|required',
+            'maquina' => ['numeric', 'required'],
             'horometroInicial' => 'required',
             'horasPromedio' => 'required',
             'valorXhora' => 'required',
             'valorIda' => 'required'
         ]);
+
         if ($validate->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'invalid data',
-                'data' => $request->all()
+                'message' => $validate->errors()->first(),
+                'errors' => $validate->errors()
             ], Response::HTTP_OK);
         }
 

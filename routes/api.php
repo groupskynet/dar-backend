@@ -10,7 +10,6 @@ use App\Http\Controllers\OperadoresController;
 use App\Http\Controllers\OrdenServicioController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\TicketsController;
-use App\Models\Maquinas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +34,7 @@ Route::resource('orden-servicio', OrdenServicioController::class);
 Route::resource('tickets', TicketsController::class);
 Route::resource('mantenimientos', MantenimientosController::class);
 Route::post('maquina/asignar', [MaquinasController::class, 'asignarOperador']);
+Route::get('orden/{operador}', [OrdenServicioController::class, 'buscarOrdenDeServicioActiva']);
 
 Route::group(['prefix' => 'literales'], function () {
     Route::get('marcas/all', [MarcasController::class, 'all']);

@@ -14,7 +14,6 @@ class OrdenServicio extends Model
     protected $table = 'orden_servicios';
 
     protected $fillable = [
-
         'id',
         'cliente',
         'maquina',
@@ -25,7 +24,7 @@ class OrdenServicio extends Model
         'pagare',
         'valorIda',
         'valorVuelta',
-
+        'estado'
     ];
 
     public function cliente()
@@ -42,6 +41,11 @@ class OrdenServicio extends Model
     {
         return $this->belongsToMany(Accesorios::class, 'rel_orden_servicio', 'orden', 'accesorio')
             ->withPivot('valorXhora')->withTrashed();
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Tickets::class, 'orden', 'id');
     }
 
 }
