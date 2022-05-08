@@ -16,7 +16,7 @@ class TicketsPosterioresAlaFechaRule implements Rule
 
     public function passes($attribute, $value)
     {
-        return Ticket::where([['fecha', '>', $value], ['maquina', $this->maquina]])->count() > 0;
+        return Tickets::where([['fecha', '>', $value], ['maquina', $this->maquina]])->count() === 0;
     }
 
     public function message()

@@ -15,8 +15,6 @@ return new class extends Migration {
             $table->foreign('orden')->references('id')->on('orden_servicios');
             $table->string('horometroInicial');
             $table->string('horometroFinal');
-            $table->string('galones')->nullable();
-            $table->string('costo')->nullable();
             $table->foreignId('cliente');
             $table->foreign('cliente')->references('id')->on('clientes');
             $table->foreignId('maquina');
@@ -26,6 +24,9 @@ return new class extends Migration {
             $table->foreignId('accesorio')->nullable();
             $table->foreign('accesorio')->references('id')->on('accesorios');
             $table->string('soporte');
+            $table->string('galones')->nullable();
+            $table->string('costo')->nullable();
+            $table->string('factura')->nullable();
             $table->string('estado')->default('PENDIENTE');
             $table->timestamps();
             $table->softDeletes();

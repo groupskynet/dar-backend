@@ -3,17 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Operadores;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class OperadoresController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
     public function index()
     {
         $operadores = Operadores::paginate(10);
@@ -23,6 +19,7 @@ class OperadoresController extends Controller
             'data' => $operadores
         ], Response::HTTP_OK);
     }
+
     public function all()
     {
         $operadores = Operadores::all();
@@ -34,22 +31,6 @@ class OperadoresController extends Controller
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
         $validate = Validator::make($request->all(), [
@@ -98,35 +79,6 @@ class OperadoresController extends Controller
         ], Response::HTTP_OK);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Operadores $operadores
-     * @return Response
-     */
-    public function show(Operadores $operadores)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Operadores $operadores
-     * @return Response
-     */
-    public function edit(Operadores $operadores)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param Operadores $operadores
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, $id)
     {
         $validate = Validator::make($request->all(), [
@@ -146,7 +98,7 @@ class OperadoresController extends Controller
             ], Response::HTTP_OK);
         }
 
-        $operador= Operadores::find($id);
+        $operador = Operadores::find($id);
         $operador->fill($request->all());
         $operador->nombres = strtoupper($request->nombres);
         $operador->apellidos = strtoupper($request->apellidos);
@@ -158,13 +110,14 @@ class OperadoresController extends Controller
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardador correctamente',
-                'data' => $operador 
-            ], Response::HTTP_OK);
-            return response()->json([
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                'message' => 'Error en el servidor'
+                'data' => $operador
             ], Response::HTTP_OK);
         }
+
+        return response()->json([
+            'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            'message' => 'Error en el servidor'
+        ], Response::HTTP_OK);
 
     }
 
@@ -173,7 +126,7 @@ class OperadoresController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Operadores $operadores
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function destroy($id)
     {

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Maquinas;
 use App\Models\Operadores;
-use App\Models\Tickets;
 use App\Models\OrdenServicio;
+use App\Models\Tickets;
 use App\Rules\MaquinaAsociadaConEstadoPendiente;
 use App\Rules\OrdenConTicketsAsociados;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,7 +51,7 @@ class OrdenServicioController extends Controller
         if ($validate->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'invalid data',
+                'message' => $validate->errors()->first(),
                 'errors' => $validate->errors()
             ], Response::HTTP_OK);
         }
@@ -193,11 +193,18 @@ class OrdenServicioController extends Controller
     {
         $ordenServicio = OrdenServicio::find($id);
         if ($ordenServicio) {
-            $ordenServicio->delete();
-            return response()->json([
-                'status' => Response::HTTP_OK,
-                'message' => 'Orden de servicio eliminada correctamente'
-            ]);
+            if (Tickets::where('orden', $ordenServicio->id)->count() === 0) {
+                $ordenServicio->delete();
+                return response()->json([
+                    'status' => Response::HTTP_OK,
+                    'message' => 'Orden de servicio eliminada correctamente'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'La Orden de Servicio tiene tickets asociados'
+                ], Response::HTTP_OK);
+            }
         }
         return response()->json([
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,

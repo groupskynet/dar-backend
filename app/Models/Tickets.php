@@ -37,6 +37,10 @@ class Tickets extends Model
         return $this->belongsTo(Clientes::class, 'cliente', 'id');
     }
 
+    public function orden() {
+        return $this->belongsTo(OrdenServicio::class, 'orden', 'id');
+    }
+
     public function operador()
     {
         return $this->belongsTo(Operadores::class, 'operador', 'id');

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Tickets;
 use App\Rules\AccesorioTicketRule;
+use App\Rules\FacturaGasolinaTicketRule;
 use App\Rules\TicketsPosterioresAlaFechaRule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TicketsController extends Controller
@@ -43,13 +45,15 @@ class TicketsController extends Controller
             'accesorio' => [new AccesorioTicketRule($request->maquina, $request->fecha)],
             'horometroInicial' => 'required',
             'horometroFinal' => 'required',
-            'soporte' => 'required|mimes:png,jpg,jpeg|max:1000'
+            'tieneCombustible' => 'required',
+            'soporte' => 'required|mimes:png,jpg,jpeg|max:1000',
+            'factura' => [new FacturaGasolinaTicketRule($request->tieneCombustible)],
         ]);
 
         if ($validate->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'invalid data',
+                'message' => $validate->errors()->first(),
                 'data' => $validate->errors()
             ], Response::HTTP_OK);
         }
@@ -59,6 +63,12 @@ class TicketsController extends Controller
         if ($request->hasFile('soporte')) {
             $path = $request->file('soporte')->storeAs(
                 'soportes/tickets', 'ticket-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
+            );
+        }
+
+        if ($request->tieneCombustible && $request->hasFile('factura')) {
+            $path = $request->file('factura')->storeAs(
+                'soportes/combustible', 'factura-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
             );
         }
 
@@ -85,17 +95,36 @@ class TicketsController extends Controller
 
     public function destroy($id)
     {
-        $ticket = Tickets::find($id);
-        if ($ticket) {
-            $ticket->delete();
+        try {
+            DB::beginTransaction();
+            $ticket = Tickets::find($id);
+            if ($ticket) {
+                $ticket->delete();
+                $tickets = Tickets::where([['orden', $ticket->orden], ['fecha', '>', $ticket->fecha]])->get();
+                foreach ($tickets as $item) {
+                    $item->delete();
+                }
+                /*$ticket = Tickets::where('orden', $ticket->orden)->orderBy('fecha')->get()->last();
+                if($ticket) {
+                    $maquina = Maquinas::findOrFail($ticket->maquina);
+                    $maquina->horometro = $ticket->horometroFinal();
+                    $maquina->save();
+                }*/
+            }
+            DB::commit();
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Ticket eliminado correctamente'
+                'message' => 'Ticket eliminado correctamente',
+                'data' => Tickets::with('operador', 'cliente', 'maquina', 'accesorio')->paginate(10)
             ]);
+        } catch (e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Error del servidor'
+            ], Response::HTTP_OK);
         }
-        return response()->json([
-            'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-            'message' => 'Error del servidor'
-        ], Response::HTTP_OK);
+
+
     }
 }
