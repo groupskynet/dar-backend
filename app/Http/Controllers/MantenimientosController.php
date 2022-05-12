@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mantenimiento;
 use App\Models\Mantenimientos;
+use App\Rules\TicketsPendientesRule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use services\FactoryPago as ServicesFactoryPago;
 
 class MantenimientosController extends Controller
 {
@@ -26,14 +27,13 @@ class MantenimientosController extends Controller
 
         $validate = Validator::make($request->all(), [
             'tipo' => 'required',
-            'maquina' => 'numeric|required',
+            'maquina' => ['numeric', 'required', new TicketsPendientesRule()],
             'proveedor' => 'numeric|required',
             'descripcion' => 'required',
             'horometro' => 'numeric|required',
             'modalidad' => 'required',
             'costo' => 'required',
             'soporte' => 'required|mimes:pdf'
-
         ]);
 
         if ($validate->fails()) {
@@ -48,7 +48,8 @@ class MantenimientosController extends Controller
 
         if ($request->hasFile('soporte')) {
             $path = $request->file('soporte')->storeAs(
-                'soportes', 'soporte-' . $request->proveedor . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('soporte')->getClientOriginalName()
+                'soportes',
+                'soporte-' . $request->proveedor . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('soporte')->getClientOriginalName()
             );
         }
 
@@ -58,6 +59,10 @@ class MantenimientosController extends Controller
         $resullt = $mantenimiento->save();
 
         if ($resullt) {
+            $request->mantenimiento = $mantenimiento->id;
+            $factory = new ServicesFactoryPago($request->modalidad);
+            $pago = $factory->create();
+            $pago->pago($request);
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardados correctamente'
