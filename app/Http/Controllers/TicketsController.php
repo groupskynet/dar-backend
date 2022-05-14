@@ -92,6 +92,23 @@ class TicketsController extends Controller
         ], Response::HTTP_OK);
 
     }
+    
+    public function update($id){
+        $ticket = Tickets::find($id);
+        if($ticket === null){
+            return response()->json([
+                'status'=> Response::HTTP_BAD_REQUEST,
+                'message'=> 'El ticket no fue confirmado, por favor intentelo nuevamente'
+            ]);
+        }
+        $ticket->estado ='CONFIRMADO';
+        $ticket->save();
+        return response()->json([
+            'status'=>Response::HTTP_OK,
+            'message'=>'Ticket confirmado correctamente',
+            'data'=>$ticket
+        ]);
+    }
 
     public function destroy($id)
     {
