@@ -10,7 +10,7 @@ class DeudasController extends Controller
    
     public function index()
     {
-        $deudas = Deudas::paginate(10);
+        $deudas = Deudas::with('proveedor')->paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -20,7 +20,7 @@ class DeudasController extends Controller
 
     public function all()
     {
-        $deudas = Deudas::all();
+        $deudas = Deudas::with('proveedor')->all();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',

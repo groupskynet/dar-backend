@@ -18,11 +18,11 @@ class FacturaGasolinaTicketRule implements Rule
     public function passes($attribute, $value)
     {
 
-        if ($this->tieneCombustible && $value) {
+        if (!$this->tieneCombustible && $value) {
             return true;
         }
 
-        if (!$this->tieneCombustible) return true;
+        if ($this->tieneCombustible) return true;
 
         return false;
     }
