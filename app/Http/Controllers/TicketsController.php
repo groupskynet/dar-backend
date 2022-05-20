@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Maquinas;
+use App\Models\OrdenServicio;
 use App\Models\Tickets;
 use App\Rules\AccesorioTicketRule;
 use App\Rules\FacturaGasolinaTicketRule;
 use App\Rules\TicketsPosterioresAlaFechaRule;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -63,13 +65,15 @@ class TicketsController extends Controller
 
         if ($request->hasFile('soporte')) {
             $path = $request->file('soporte')->storeAs(
-                'soportes/tickets', 'ticket-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
+                'soportes/tickets',
+                'ticket-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
             );
         }
 
         if ($request->tieneCombustible && $request->hasFile('factura')) {
             $path = $request->file('factura')->storeAs(
-                'soportes/combustible', 'factura-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
+                'soportes/combustible',
+                'factura-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
             );
         }
 
@@ -91,29 +95,37 @@ class TicketsController extends Controller
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'message' => 'Error del servidor'
         ], Response::HTTP_OK);
-
     }
-    
-    public function update($id){
-    
-        $ticket = Tickets::find($id);
-       
-        if($ticket === null){
+
+    public function update($id)
+    {
+        try {
+            DB::beginTransaction();
+            $ticket = Tickets::find($id);
+            if ($ticket === null) {
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'El ticket no fue confirmado, por favor intentelo nuevamente'
+                ]);
+            }
+            $ticket->estado = 'CONFIRMADO';
+            $ticket->save();
+            $maquina = Maquinas::find($ticket->maquina);
+            $maquina->horometro = $ticket->horometroFinal;
+            $maquina->save();
+            DB::commit();
             return response()->json([
-                'status'=> Response::HTTP_BAD_REQUEST,
-                'message'=> 'El ticket no fue confirmado, por favor intentelo nuevamente'
+                'status' => Response::HTTP_OK,
+                'message' => 'Ticket confirmado correctamente',
+                'data' => $ticket
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Error del servidor',
             ]);
         }
-        $ticket->estado ='CONFIRMADO';
-        $ticket->save();
-        $maquina = Maquinas::find($ticket->maquina);
-        $maquina->horometro = $ticket->horometroFinal;
-        $maquina->save();
-        return response()->json([
-            'status'=>Response::HTTP_OK,
-            'message'=>'Ticket confirmado correctamente',
-            'data'=>$ticket
-        ]);
     }
 
     public function destroy($id)
@@ -122,17 +134,22 @@ class TicketsController extends Controller
             DB::beginTransaction();
             $ticket = Tickets::find($id);
             if ($ticket) {
+                $aux = $ticket;
                 $ticket->delete();
                 $tickets = Tickets::where([['orden', $ticket->orden], ['fecha', '>', $ticket->fecha]])->get();
                 foreach ($tickets as $item) {
                     $item->delete();
                 }
-                /*$ticket = Tickets::where('orden', $ticket->orden)->orderBy('fecha')->get()->last();
-                if($ticket) {
-                    $maquina = Maquinas::findOrFail($ticket->maquina);
-                    $maquina->horometro = $ticket->horometroFinal();
+                $ticket = Tickets::where([['orden', $ticket->orden], ['estado', 'CONFIRMADO']])->orderBy('fecha')->get()->last();
+                $maquina = Maquinas::findOrFail($aux->maquina);
+                if ($ticket) {
+                    $maquina->horometro = $ticket->horometroFinal;
                     $maquina->save();
-                }*/
+                } else {
+                    $orden = OrdenServicio::find($aux->orden);
+                    $maquina->horometro = $orden->horometroInicial;
+                    $maquina->save();
+                }
             }
             DB::commit();
             return response()->json([
@@ -140,14 +157,12 @@ class TicketsController extends Controller
                 'message' => 'Ticket eliminado correctamente',
                 'data' => Tickets::with('operador', 'cliente', 'maquina', 'accesorio')->paginate(10)
             ]);
-        } catch (e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => 'Error del servidor'
             ], Response::HTTP_OK);
         }
-
-
     }
 }

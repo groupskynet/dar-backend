@@ -1,6 +1,6 @@
 <?php
 
-namespace services;
+namespace Services;
 
 use Exception;
 
@@ -19,7 +19,7 @@ class FactoryPago
     if ($this->type === "EFECTIVO")
       return new PagoEfectivo();
 
-    if ($this->type === "PARCIAL")
+    if ($this->type === "PAGO PARCIAL")
       return new PagoParcial();
 
     if ($this->type === "CREDITO")
