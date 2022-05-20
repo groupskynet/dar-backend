@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Maquinas;
 use App\Models\Tickets;
 use App\Rules\AccesorioTicketRule;
 use App\Rules\FacturaGasolinaTicketRule;
@@ -88,13 +89,15 @@ class TicketsController extends Controller
         }
         return response()->json([
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-            'message' => 'Erros del servidor'
+            'message' => 'Error del servidor'
         ], Response::HTTP_OK);
 
     }
     
     public function update($id){
+    
         $ticket = Tickets::find($id);
+       
         if($ticket === null){
             return response()->json([
                 'status'=> Response::HTTP_BAD_REQUEST,
@@ -103,6 +106,9 @@ class TicketsController extends Controller
         }
         $ticket->estado ='CONFIRMADO';
         $ticket->save();
+        $maquina = Maquinas::find($ticket->maquina);
+        $maquina->horometro = $ticket->horometroFinal;
+        $maquina->save();
         return response()->json([
             'status'=>Response::HTTP_OK,
             'message'=>'Ticket confirmado correctamente',
