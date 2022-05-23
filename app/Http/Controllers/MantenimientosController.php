@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mantenimientos;
+use App\Rules\HorometroMaquinaRule;
 use App\Rules\TicketsPendientesRule;
 use Exception;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class MantenimientosController extends Controller
             'maquina' => ['numeric', 'required', new TicketsPendientesRule()],
             'proveedor' => 'numeric|required',
             'descripcion' => 'required',
-            'horometro' => 'numeric|required',
+            'horometro' => ['numeric', 'required', new HorometroMaquinaRule($request->maquina)],
             'modalidad' => 'required',
             'costo' => 'required',
             'soporte' => 'required|mimes:pdf'
@@ -67,7 +68,8 @@ class MantenimientosController extends Controller
             DB::commit();
             return response()->json([
                 'status' => Response::HTTP_OK,
-                'message' => 'Datos guardados correctamente'
+                'message' => 'Datos guardados correctamente',
+                'data' => $mantenimiento
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             DB::rollBack();
