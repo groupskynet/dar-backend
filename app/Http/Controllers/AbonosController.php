@@ -2,31 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Deudas;
+use App\Models\Abonos;
 use Illuminate\Http\Response;
 
-class DeudasController extends Controller
+class AbonosController extends Controller
 {
-   
+    
     public function index()
     {
-        $deudas = Deudas::with('mantenimiento.proveedor')->paginate(10);
+        $abonos = Abonos::with('proveedor')->paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
-            'data' => $deudas
+            'data' => $abonos
         ], Response::HTTP_OK);
     }
 
     public function all()
     {
-        $deudas = Deudas::with('mantenimiento.proveedor')->all();
+        $abonos = Abonos::with('proveedor')->all(); 
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
-            'data' => $deudas
+            'data' => $abonos
         ], Response::HTTP_OK);
     }
-
-   
 }

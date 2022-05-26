@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbonosController;
 use App\Http\Controllers\AccesoriosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DeudasController;
@@ -35,6 +36,7 @@ Route::resource('orden-servicio', OrdenServicioController::class);
 Route::resource('tickets', TicketsController::class);
 Route::resource('mantenimientos', MantenimientosController::class);
 Route::resource('deudas', DeudasController::class);
+Route::resource('abonos', AbonosController::class);
 Route::post('maquina/asignar', [MaquinasController::class, 'asignarOperador']);
 Route::get('orden/{operador}', [OrdenServicioController::class, 'buscarOrdenDeServicioActiva']);
 
@@ -46,8 +48,6 @@ Route::group(['prefix' => 'literales'], function () {
     Route::get('accesorios/all', [AccesoriosController::class, 'all']);
     Route::get('proveedores/all', [ProveedoresController::class, 'all']);
     Route::get('ordenServicio/all', [OrdenServicioController::class, 'all']);
-    Route::get('deudas/all', [DeudasController::class, 'all']);
-    Route::get('abonos/all', [AbonosController::class, 'all']);
 });
 
 

@@ -18,10 +18,10 @@ class HorometroMaquinaRule implements Rule
     public function passes($attribute, $value)
     {
         $maquina = Maquinas::find($this->maquina);
-        $ticket =  Tickets::where([['estado', 'CONFIRMADO'], ['maquina', $maquina->id]])->last();
+        $ticket = Tickets::where([['maquina', $maquina->id], ['estado', 'CONFIRMADO']])->orderBy('fecha')->get()->last();
 
         $flag = true;
-        if ($ticket > 0 && $value < $ticket->horometroFinal) {
+        if ($ticket && $value < $ticket->horometroFinal) {
             $flag = false;
         } else if ($value < $maquina->horometro) {
             $flag = false;
