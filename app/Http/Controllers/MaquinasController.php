@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Maquinas;
+use App\Models\Asignaciones;
 use App\Models\Operadores;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\Framework\Constraint\Operator;
 
 class MaquinasController extends Controller
 {
@@ -52,11 +54,26 @@ class MaquinasController extends Controller
                 'message'=>'invalid data'
             ],Response::HTTP_OK);
         }
-        Maquinas::where('operador', $operador)->each(function($item){
+      
 
-        });
         $maquina->operador = $request->operador;
         $result = $maquina->save();
+
+        
+        $asignacion = new Asignaciones();
+        $anteriorAsignacion = Asignaciones::where(
+            [['operador', $request->operador],['maquina',$request->maquina],['fechaFin', 'IS NULL']]
+        )->first();
+        if($anteriorAsignacion){
+
+            $anteriorAsignacion->fechaFin = date("Y-m-d");
+            $anteriorAsignacion->save();
+        }
+
+        $asignacion->operador = $request->operador;
+        $asignacion->maquina= $request->maquina;
+        $asignacion->fechaInicio = date('Y-m-d');
+        $result = $asignacion->save();
 
         if($result){
             $maq = Maquinas::with('operador')->where('id', $maquina->id)->first();
@@ -70,6 +87,8 @@ class MaquinasController extends Controller
             'status'=>Response::HTTP_INTERNAL_SERVER_ERROR,
             'message'=>'Error de Servidor'
         ],Response::HTTP_OK);
+
+
     }
 
     public function store(Request $request)

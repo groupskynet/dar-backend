@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbonosController;
 use App\Http\Controllers\AccesoriosController;
+use App\Http\Controllers\AsignacionesController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\DeudasController;
 use App\Http\Controllers\GastosController;
@@ -37,6 +38,7 @@ Route::resource('tickets', TicketsController::class);
 Route::resource('mantenimientos', MantenimientosController::class);
 Route::resource('deudas', DeudasController::class);
 Route::resource('abonos', AbonosController::class);
+Route::resource('asignaciones', AsignacionesController::class);
 Route::post('maquina/asignar', [MaquinasController::class, 'asignarOperador']);
 Route::get('orden/{operador}', [OrdenServicioController::class, 'buscarOrdenDeServicioActiva']);
 
