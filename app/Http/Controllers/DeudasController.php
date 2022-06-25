@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Deudas;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class DeudasController extends Controller
 {
-   
+
     public function index()
     {
-        $deudas = Deudas::with('mantenimiento.proveedor')->paginate(10);
+        $deudas = DB::table('deudas as d')
+            ->join('mantenimientos as m', 'm.id', '=', 'd.mantenimiento')
+            ->join('proveedores as p', 'm.proveedor', '=', 'p.id')
+            ->select(DB::raw('p.id as id, p.nombres as proveedor,
+                (sum(d.valor) - (select COALESCE(sum(a.valor), 0) from abonos a where a.proveedor = p.id))  as cantidad'))
+            ->groupBy(['proveedor', 'id'])
+            ->having('cantidad', '>', 0)
+            ->paginate(8);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -27,6 +35,4 @@ class DeudasController extends Controller
             'data' => $deudas
         ], Response::HTTP_OK);
     }
-
-   
 }

@@ -9,10 +9,10 @@ class DetalleAbonos extends Model
 {
     use HasFactory;
     protected $table = 'detalle-abono';
-    protected $fillable = ['deuda','valor', 'created_at','updated_at'];
+    protected $fillable = ['deuda', 'valor', 'created_at', 'updated_at'];
 
-    public function deuda() {
+    public function deuda()
+    {
         return $this->belongsTo(Deudas::class, 'deuda', 'id');
     }
-
 }

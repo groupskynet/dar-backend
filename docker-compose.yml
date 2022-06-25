@@ -43,5 +43,24 @@ services:
       - ./docker-compose/mysql:/var/lib/mysql
     networks:
       - dar
+  keycloak:
+    container_name: dar-auth
+    image: quay.io/keycloak/keycloak
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: dar
+      DB_USER:  dar
+      DB_PASSWORD: secret
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - 8085:8080
+    command:
+      - start
+    depends_on:
+      - mysql
+    networks:
+      - dar
 networks:
     dar:

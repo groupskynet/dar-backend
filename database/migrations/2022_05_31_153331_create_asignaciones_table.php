@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('asignaciones', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('operador');
             $table->foreign('operador')->references('id')->on('operadores');
             $table->foreignId('maquina');
