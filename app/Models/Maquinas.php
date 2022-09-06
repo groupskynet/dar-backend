@@ -26,6 +26,11 @@ class Maquinas extends Model
         'tipo'
     ];
 
+    public function setChoferAttribute($value)
+    {
+        $this->attributes['operador'] =  $value;
+    }
+
     public function marca()
     {
         return $this->belongsTo(Marcas::class, 'marca', 'id')
@@ -41,5 +46,4 @@ class Maquinas extends Model
     {
         return $this->belongsTo(Operadores::class, 'operador', 'id')->withTrashed();
     }
-
 }

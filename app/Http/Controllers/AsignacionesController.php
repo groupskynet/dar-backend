@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Asignaciones;
 use App\Models\Maquinas;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class AsignacionesController extends Controller
 {
 
     public function index()
     {
-        $asignaciones = Asignaciones::with(['operadorRelation', 'maquinaRelation'])->paginate(10);
+        $asignaciones = Asignaciones::with(['operadorRelation', 'maquinaRelation'])
+            ->orderBy('maquina')->paginate(10);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -47,40 +50,45 @@ class AsignacionesController extends Controller
             ], Response::HTTP_OK);
         }
 
-        $asignacion = new Asignaciones();
-        $anteriorAsignacion = Asignaciones::where(
-            'maquina',$request->maquina
-        )->whereNull('fechaFin')->first();
+        try {
+            DB::beginTransaction();
+            $asignacion = new Asignaciones();
+            $anteriorAsignacion = Asignaciones::where(
+                'maquina',
+                $request->maquina
+            )->whereNull('fechaFin')->first();
 
-        $currentDate =  date('Y-m-d h:i:s');
-        if($anteriorAsignacion){
-             if($anteriorAsignacion->operador === $request->operador){
-                return response()->json([
-                    'status' => Response::HTTP_OK,
-                    'message' => 'Datos guardados correctamente',
-                    'data' => Maquinas::find($request->operador),
-                ], Response::HTTP_OK);
+            $currentDate =  date('Y-m-d h:i:s');
+            if ($anteriorAsignacion) {
+                if ($anteriorAsignacion->operador === $request->operador) {
+                    return response()->json([
+                        'status' => Response::HTTP_OK,
+                        'message' => 'Datos guardados correctamente',
+                        'data' => Maquinas::with('operador')->find($request->maquina),
+                    ], Response::HTTP_OK);
+                }
+                $anteriorAsignacion->fechaFin = $currentDate;
+                $anteriorAsignacion->save();
             }
-            $anteriorAsignacion->fechaFin = $currentDate;
-            $anteriorAsignacion->save();
-        }
-
-        $asignacion->operador = $request->operador;
-        $asignacion->maquina = $request->maquina;
-        $maquina = Maquinas::with('operador')->where('id',$request->maquina)->first();
-        $maquina->operador = $request->operador;
-        $asignacion->fechaInicio = $currentDate;
-        $result = $asignacion->save();
-        if ($result) {
+            $asignacion->operador = $request->operador;
+            $asignacion->maquina = $request->maquina;
+            $asignacion->fechaInicio = $currentDate;
+            $asignacion->save();
+            $maquina = Maquinas::find($request->maquina);
+            $maquina = $maquina->setAttribute('operador', $request->operador);
+            $maquina->save();
+            DB::commit();
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardados correctamente',
-                'data' => $maquina
-           ], Response::HTTP_OK);
+                'data' => Maquinas::with('operador')->find($request->operador),
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Error de servidor'
+            ], Response::HTTP_OK);
         }
-        return response()->json([
-           'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-            'message' => 'Error de servidor'
-        ], Response::HTTP_OK);
     }
 }

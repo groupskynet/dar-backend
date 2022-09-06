@@ -54,10 +54,12 @@ services:
       DB_PASSWORD: secret
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - 8085:8080
     command:
-      - start
+      - start-dev
     depends_on:
       - mysql
     networks:
