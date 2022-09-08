@@ -42,8 +42,8 @@ class MantenimientosController extends Controller
         if ($validate->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
-                'message' => 'invalid data',
-                'data' => $validate->errors()
+                'message' => $validate->errors()->first(),
+                'errors' => $validate->errors()
             ], Response::HTTP_OK);
         }
 
