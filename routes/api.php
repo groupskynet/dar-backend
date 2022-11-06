@@ -12,6 +12,7 @@ use App\Http\Controllers\MaquinasController;
 use App\Http\Controllers\MarcasController;
 use App\Http\Controllers\OperadoresController;
 use App\Http\Controllers\OrdenServicioController;
+use App\Http\Controllers\PagosController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\TicketsController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,10 @@ Route::get('asignaciones', [AsignacionesController::class, 'index']);
 Route::post('maquina/asignar', [AsignacionesController::class, 'store']);
 Route::get('orden/{operador}', [OrdenServicioController::class, 'buscarOrdenDeServicioActiva']);
 Route::post('file', [FilesController::class, 'getFile']);
+Route::group(['prefix' => 'pagos'], function () {
+    Route::post('maquina', [PagosController::class, 'maquina']);
+    Route::post('accesorios', [PagosController::class, 'accesorio']);
+});
 Route::group(['prefix' => 'literales'], function () {
     Route::get('marcas/all', [MarcasController::class, 'all']);
     Route::get('maquinas/all', [MaquinasController::class, 'all']);

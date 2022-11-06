@@ -10,7 +10,7 @@ class Accesorios extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    public $fillable=[
+    public $fillable = [
         'id',
         'maquina',
         'nombre',
@@ -21,10 +21,17 @@ class Accesorios extends Model
         'registro',
     ];
 
-    public function marca(){
-        return $this->belongsTo(Marcas::class, 'marca','id')->withTrashed();
+    public function marca()
+    {
+        return $this->belongsTo(Marcas::class, 'marca', 'id')->withTrashed();
     }
-    public function maquina(){
+    public function maquina()
+    {
         return $this->belongsTo(Maquinas::class, 'maquina', 'id')->withTrashed();
+    }
+
+    public function pagos()
+    {
+        return $this->hasMany(PagoAccesorio::class, 'accesorio_id', 'id');
     }
 }

@@ -18,6 +18,7 @@ class Tickets extends Model
         'fecha',
         'maquina',
         'accesorio',
+        'consecutivo',
         'horometroInicial',
         'horometroFinal',
         'galones',
@@ -37,7 +38,8 @@ class Tickets extends Model
         return $this->belongsTo(Clientes::class, 'cliente', 'id');
     }
 
-    public function orden() {
+    public function orden()
+    {
         return $this->belongsTo(OrdenServicio::class, 'orden', 'id');
     }
 

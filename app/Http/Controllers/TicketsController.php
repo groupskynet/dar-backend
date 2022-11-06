@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Consecutivo;
 use App\Models\Maquinas;
 use App\Models\OrdenServicio;
 use App\Models\Tickets;
@@ -77,24 +78,34 @@ class TicketsController extends Controller
             );
         }
 
-        $ticket = new Tickets($request->all());
-        $ticket->orden = $request->nOrden;
-        $ticket->soporte = $path;
-        $result = $ticket->save();
-        if ($result) {
-            $ticket = Tickets::with('operador', 'maquina', 'accesorio', 'cliente')
-                ->where('id', $ticket->id)
-                ->first();
+        try {
+            DB::beginTransaction();
+            $ticket = new Tickets($request->all());
+            $ticket->orden = $request->nOrden;
+            $ticket->soporte = $path;
+
+            $maquina = Maquinas::find($ticket->maquina);
+            $consecutivo = Consecutivo::where('prefijo', $maquina->prefijo)->first();
+            $ticket->consecutivo = $consecutivo->prefijo . '-' . str_pad(++$consecutivo->consecutivo, 4, 0, STR_PAD_LEFT);
+            $consecutivo->save();
+            $ticket->save();
+
+            $ticket = $ticket->with('operador', 'maquina', 'accesorio', 'cliente')->find($ticket->id);
+
+            DB::commit();
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardados correctamente',
                 'data' => $ticket
             ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => 'Error del servidor'
+            ], Response::HTTP_OK);
         }
-        return response()->json([
-            'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-            'message' => 'Error del servidor'
-        ], Response::HTTP_OK);
     }
 
     public function update($id)
@@ -113,6 +124,9 @@ class TicketsController extends Controller
             $maquina = Maquinas::find($ticket->maquina);
             $maquina->horometro = $ticket->horometroFinal;
             $maquina->save();
+
+            $ticket = Tickets::with('operador', 'cliente', 'maquina', 'accesorio')->find($ticket->id);
+
             DB::commit();
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -136,7 +150,7 @@ class TicketsController extends Controller
             if ($ticket) {
                 $aux = $ticket;
                 $ticket->delete();
-                $tickets = Tickets::where([['orden', $ticket->orden], ['fecha', '>', $ticket->fecha]])->get();
+                $tickets = Tickets::where([['orden', $ticket->orden], ['fecha', '>=', $ticket->fecha], ['id', '>=', $ticket->id]])->get();
                 foreach ($tickets as $item) {
                     $item->delete();
                 }
