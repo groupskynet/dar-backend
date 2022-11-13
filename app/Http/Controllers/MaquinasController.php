@@ -38,7 +38,7 @@ class MaquinasController extends Controller
 
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(), [
+        $validate = validator::make($request->all(), [
             'nombre' => 'required',
             'serie' => 'required',
             'marca' => 'numeric|required',

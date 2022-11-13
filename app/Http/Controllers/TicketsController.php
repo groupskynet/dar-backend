@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Consecutivo;
 use App\Models\Maquinas;
 use App\Models\OrdenServicio;
+use App\Models\PagoAccesorio;
+use App\Models\PagoMaquina;
 use App\Models\Tickets;
 use App\Rules\AccesorioTicketRule;
 use App\Rules\FacturaGasolinaTicketRule;
@@ -78,6 +80,7 @@ class TicketsController extends Controller
             );
         }
 
+
         try {
             DB::beginTransaction();
             $ticket = new Tickets($request->all());
@@ -85,6 +88,32 @@ class TicketsController extends Controller
             $ticket->soporte = $path;
 
             $maquina = Maquinas::find($ticket->maquina);
+
+            $pagoMaquina = PagoMaquina::where('maquina_id', $maquina->id)
+                ->whereNull('fecha_fin')
+                ->first();
+
+            if (!$pagoMaquina) return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Tabla de pagos sin configurar para esta maquina.',
+            ], Response::HTTP_OK);
+
+            $ticket->valor_por_hora =  $pagoMaquina->valor;
+
+            if (isset($request->accesorio)) {
+
+                $pagoAccesorio = PagoAccesorio::where('accesorio_id', $request->accesorio)
+                    ->whereNull('fecha_fin')
+                    ->first();
+
+                if (!$pagoAccesorio) return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'Tabla de pagos sin configurar para este accesorio.',
+                ]);
+
+                $ticket->valor_por_hora =  $pagoAccesorio->valor;
+            }
+
             $consecutivo = Consecutivo::where('prefijo', $maquina->prefijo)->first();
             $ticket->consecutivo = $consecutivo->prefijo . '-' . str_pad(++$consecutivo->consecutivo, 4, 0, STR_PAD_LEFT);
             $consecutivo->save();

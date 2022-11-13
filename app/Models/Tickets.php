@@ -25,7 +25,8 @@ class Tickets extends Model
         'costo',
         'soporte',
         'operador',
-        'estado'
+        'estado',
+        'valor_por_hora'
     ];
 
     public function getNumeroOrdenAttribute(): string
