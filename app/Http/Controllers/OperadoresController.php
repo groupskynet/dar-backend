@@ -6,7 +6,9 @@ use App\Models\Operadores;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Uuid;
 
 class OperadoresController extends Controller
 {
@@ -53,9 +55,10 @@ class OperadoresController extends Controller
         $path = '';
 
         if ($request->hasFile('licencia')) {
-            $path = $request->file('licencia')->storeAs(
-                'licencias', 'licencia-' . $request->cedula . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('licencia')->getClientOriginalName()
-            );
+            $file = $request->file('licencia');
+            $name = Uuid::uuid4() . "." . $file->getClientOriginalExtension();
+            $path = 'licencias/' . $name;
+            Storage::disk('s3')->put($path, file_get_contents($file));
         }
 
         $operador = new Operadores($request->all());
@@ -118,7 +121,6 @@ class OperadoresController extends Controller
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'message' => 'Error en el servidor'
         ], Response::HTTP_OK);
-
     }
 
 

@@ -15,7 +15,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Uuid;
 
 class TicketsController extends Controller
 {
@@ -64,24 +66,24 @@ class TicketsController extends Controller
             ], Response::HTTP_OK);
         }
 
-        $path = '';
-
-        if ($request->hasFile('soporte')) {
-            $path = $request->file('soporte')->storeAs(
-                'soportes/tickets',
-                'ticket-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
-            );
-        }
-
-        if ($request->tieneCombustible && $request->hasFile('factura')) {
-            $path = $request->file('factura')->storeAs(
-                'soportes/combustible',
-                'factura-' . date('Y-m-d-hh:mm:ss') . '-' . $request->file('soporte')->getClientOriginalName()
-            );
-        }
-
-
         try {
+
+            $path = '';
+
+            if ($request->hasFile('soporte')) {
+                $file = $request->file('soporte');
+                $name = Uuid::uuid4() . "." . $file->getClientOriginalExtension();
+                $path = 'tickets/' . $name;
+                Storage::disk('s3')->put($path, file_get_contents($file));
+            }
+
+            if ($request->tieneCombustible && $request->hasFile('factura')) {
+                $file = $request->file('factura');
+                $name = time() . $file->getClientOriginalName();
+                $path = 'combustible/' . $name;
+                Storage::disk('s3')->put($path, file_get_contents($file));
+            }
+
             DB::beginTransaction();
             $ticket = new Tickets($request->all());
             $ticket->orden = $request->nOrden;

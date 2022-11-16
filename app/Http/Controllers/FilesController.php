@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -9,10 +10,13 @@ class FilesController extends Controller
 {
     public function getFile(Request $request)
     {
-        if (!Storage::exists($request->path))
-            return "";
-        $file = Storage::get($request->path);
-        $mimeType = Storage::mimeType($request->path);
-        return "data:$mimeType;base64," . base64_encode($file);
+        try {
+            if (!Storage::disk('s3')->exists($request->path))
+                return "";
+            $file = Storage::disk('s3')->get($request->path);
+            return "data:;base64," . base64_encode($file);
+        } catch (Exception $e) {
+            return response()->json(['error ->' => $e->getMessage()]);
+        }
     }
 }

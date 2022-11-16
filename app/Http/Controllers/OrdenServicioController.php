@@ -11,7 +11,9 @@ use App\Rules\OrdenConTicketsAsociados;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Uuid;
 
 class OrdenServicioController extends Controller
 {
@@ -59,9 +61,10 @@ class OrdenServicioController extends Controller
         $path = '';
 
         if ($request->hasFile('pagare')) {
-            $path = $request->file('pagare')->storeAs(
-                'pagares', 'pagare-' . $request->cliente . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('pagare')->getClientOriginalName()
-            );
+            $file = $request->file('pagare');
+            $name = Uuid::uuid4() . "." . $file->getClientOriginalExtension();
+            $path = 'pagares/' . $name;
+            Storage::disk('s3')->put($path, file_get_contents($file));
         }
 
         $ordenServicio = new OrdenServicio($request->all());
@@ -163,7 +166,8 @@ class OrdenServicioController extends Controller
 
         if ($request->hasFile('pagare')) {
             $path = $request->file('pagare')->storeAs(
-                'pagares', 'pagare-' . $request->cliente . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('pagare')->getClientOriginalName()
+                'pagares',
+                'pagare-' . $request->cliente . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('pagare')->getClientOriginalName()
             );
         }
 

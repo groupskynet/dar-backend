@@ -9,7 +9,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Ramsey\Uuid\Uuid;
 use Services\FactoryPago as ServicesFactoryPago;
 
 class MantenimientosController extends Controller
@@ -49,13 +51,16 @@ class MantenimientosController extends Controller
 
         $path = '';
 
-        if ($request->hasFile('soporte')) {
-            $path = $request->file('soporte')->storeAs(
-                'soportes',
-                'soporte-' . $request->proveedor . '-' . date('Y-m-d-hh:mm') . '-' . $request->file('soporte')->getClientOriginalName()
-            );
-        }
+
         try {
+
+            if ($request->hasFile('soporte')) {
+                $file = $request->file('soporte');
+                $name = Uuid::uuid4() . "." . $file->getClientOriginalExtension();
+                $path = 'gastos/' . $name;
+                Storage::disk('s3')->put($path, file_get_contents($file));
+            }
+
             DB::beginTransaction();
             $mantenimiento = new Mantenimientos($request->all());
             $mantenimiento->soporte = $path;
