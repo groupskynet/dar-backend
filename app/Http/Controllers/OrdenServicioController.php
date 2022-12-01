@@ -13,7 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
+use SebastianBergmann\Environment\Console;
 
 class OrdenServicioController extends Controller
 {
@@ -207,6 +209,30 @@ class OrdenServicioController extends Controller
                 return response()->json([
                     'status' => Response::HTTP_BAD_REQUEST,
                     'message' => 'La Orden de Servicio tiene tickets asociados'
+                ], Response::HTTP_OK);
+            }
+        }
+        return response()->json([
+            'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            'message' => 'Error del servidor'
+        ], Response::HTTP_OK);
+    }
+
+    public function confirmarOds($id)
+    {
+        $ordenServicio = OrdenServicio::find($id);
+        if ($ordenServicio) {
+            if (Tickets::where([['orden', $ordenServicio->id], ['estado', 'PENDIENTE']])->count() === 0) {
+                $ordenServicio->estado = "CONFIRMADA";
+                $ordenServicio->save();
+                return response()->json([
+                    'status' => Response::HTTP_OK,
+                    'message' => 'Orden de servicio confirmada correctamente'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'La Orden de Servicio ORD-' . str_pad($ordenServicio->id, 4, "0", STR_PAD_LEFT)  . ' tiene tickets pendientes por confirmar'
                 ], Response::HTTP_OK);
             }
         }

@@ -34,6 +34,7 @@ Route::group(['middleware' => ['Cors']], function () {
     Route::get('asignaciones', [AsignacionesController::class, 'index']);
     Route::post('maquina/asignar', [AsignacionesController::class, 'store']);
     Route::get('orden/{operador}', [OrdenServicioController::class, 'buscarOrdenDeServicioActiva']);
+    Route::put('orden/confirmarOds/{id}', [OrdenServicioController::class, 'confirmarOds']);
     Route::post('file', [FilesController::class, 'getFile']);
     Route::group(['prefix' => 'pagos'], function () {
         Route::post('maquina', [PagosController::class, 'maquina']);
