@@ -71,6 +71,7 @@ class OrdenServicioController extends Controller
 
         $ordenServicio = new OrdenServicio($request->all());
         $ordenServicio->pagare = $path;
+        $ordenServicio->estado = "PENDIENTE";
         $result = $ordenServicio->save();
 
         if ($result) {
