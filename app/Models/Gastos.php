@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Gastos extends Model
+class Gastos extends Model implements Auditable
 {
     use HasFactory;
     use SoftDeletes;
+    use \OwenIt\Auditing\Auditable;
 
-    protected $fillable =[
+    protected $fillable = [
         'id',
         'maquina',
         'valor',
@@ -19,8 +21,8 @@ class Gastos extends Model
         'soporte',
     ];
 
-    public function maquina(){
+    public function maquina()
+    {
         return $this->belongsTo(Maquinas::class, 'maquina', 'id');
-
     }
 }

@@ -11,6 +11,7 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
+        "owen-it/laravel-auditing": "^13.0",
         "ramsey/uuid": "^4.6"
     },
     "require-dev": {
