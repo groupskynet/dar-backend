@@ -11,6 +11,7 @@ class Proveedores extends Model implements Auditable
 {
     use HasFactory;
     use SoftDeletes;
+    //5265570036511336 06/27  015
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
