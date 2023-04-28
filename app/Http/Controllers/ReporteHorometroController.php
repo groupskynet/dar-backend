@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Validator;
 class ReporteHorometroController extends Controller
 {
 
-    //pendiente calcular el valor de la hora con la orden de servicio 
-    //calcular el valor de la hora dependiendo si el ticket es de un accesorio o no 
     public function index(Request $request)
     {
 
@@ -35,17 +33,15 @@ class ReporteHorometroController extends Controller
             ->where('maquina', $request->maquina_id)
             ->where('fecha', '>=', $request->fechaInicio)
             ->where('fecha', '<=', $request->fechaFinal)
-            ->select(DB::raw('orden_servicios.'))
             ->paginate(8);
 
         $totales = DB::table('tickets')
-            ->join('orden_servicios','tickets.orden', 'orden_servicios.id')
             ->where('tickets.maquina', $request->maquina_id)
             ->where('tickets.fecha', '>=', $request->fechaInicio)
             ->where('tickets.fecha', '<=', $request->fechaFinal)
             ->whereNull('tickets.deleted_at')
             ->select(
-                DB::raw('sum((tickets.horometroFinal - tickets.horometroInicial) * orden_servicios.valorXhora) as total'), //pendiente
+                DB::raw('sum((tickets.horometroFinal - tickets.horometroInicial) * tickets.valor_por_hora_orden) as total'), //pendiente
                 DB::raw('sum(tickets.galones * tickets.costo) / sum(tickets.horometroFinal - tickets.horometroInicial) as combustible'),
                 DB::raw('avg(tickets.horometroFinal - tickets.horometroInicial) as horas_por_dia')
             )
