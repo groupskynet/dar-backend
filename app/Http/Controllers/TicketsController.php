@@ -24,7 +24,7 @@ class TicketsController extends Controller
 
     public function index()
     {
-        $tickets = Tickets::with('operador', 'cliente', 'maquina', 'accesorio', 'orden')->paginate(10);
+        $tickets = Tickets::with('operador', 'cliente', 'maquina', 'accesorio', 'orden')->paginate(3);
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
@@ -91,9 +91,12 @@ class TicketsController extends Controller
 
             $maquina = Maquinas::find($ticket->maquina);
 
+            $orden = OrdenServicio::find($ticket->orden);
+            $ticket->valor_por_hora_orden =  $orden->valorXhora;
+
             $pagoMaquina = PagoMaquina::where('maquina_id', $maquina->id)
-                ->whereNull('fecha_fin')
-                ->first();
+            ->whereNull('fecha_fin')
+            ->first();
 
             if (!$pagoMaquina) return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -103,6 +106,18 @@ class TicketsController extends Controller
             $ticket->valor_por_hora =  $pagoMaquina->valor;
 
             if (isset($request->accesorio)) {
+
+                $pagoAccesorio = DB::table('rel_orden_servicio')
+                ->where('accesorio', $request->accesorio)
+                ->where('orden', $orden->id)
+                ->first();
+
+                if (!$pagoAccesorio) return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'Tabla de pagos sin configurar para este accesorio.',
+                ]);
+
+                $ticket->valor_por_hora_orden =  $pagoAccesorio->valorXhora;
 
                 $pagoAccesorio = PagoAccesorio::where('accesorio_id', $request->accesorio)
                     ->whereNull('fecha_fin')
