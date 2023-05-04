@@ -20,6 +20,7 @@ class PagoCredito implements Pago
           $deuda->modelo = Gastos::class;
         }
 
+        $deuda->proveedor_id = $data->proveedor;
         $deuda->valor = $data->costo;
         $deuda->estado = 'PENDIENTE';
         $deuda->save();

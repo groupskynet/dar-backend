@@ -22,7 +22,8 @@ class PagoParcial implements Pago
           $deuda->relation_id = $data->gasto;
           $deuda->modelo = Gastos::class;
         }
-
+        
+        $deuda->proveedor_id = $data->proveedor;
         $deuda->valor = $data->costo;
         $deuda->estado = 'PENDIENTE';
         $deuda->save();
