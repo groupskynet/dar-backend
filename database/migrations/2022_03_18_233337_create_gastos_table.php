@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('gastos', function (Blueprint $table) {
             $table->id();
-            $table-> string('valor');
-            $table-> string('descripcion');
-            $table-> string('soporte');
+            $table->string('valor');
+            $table->string('descripcion');
+            $table->string('soporte');
             $table->foreignId('maquina');
             $table->foreign('maquina')->references('id')->on('maquinas');
             $table->timestamps();

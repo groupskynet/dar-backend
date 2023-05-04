@@ -14,7 +14,8 @@ class Deudas extends Model implements Auditable
     protected $table = 'deudas';
 
     protected $fillable = [
-        'mantenimiento',
+        'relation_id',
+        'modelo',
         'valor',
         'estado',
         'created_at',

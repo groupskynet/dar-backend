@@ -16,7 +16,10 @@ class Gastos extends Model implements Auditable
     protected $fillable = [
         'id',
         'maquina',
+        'proveedor',
+        'modalidad',
         'valor',
+        'abono',
         'descripcion',
         'soporte',
     ];

@@ -8,14 +8,11 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
+use Services\FactoryPago as ServicesFactoryPago;
 
 class GastosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $gastos = Gastos::with('maquina')->paginate(10);
@@ -40,10 +37,13 @@ class GastosController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'maquina' => 'numeric|required',
+            'proveedor' => 'numeric|required',
+            'modalidad' => 'required',
             'valor' => 'required',
             'descripcion' => 'required',
             'soporte' => 'required|mimes:pdf'
         ]);
+
         if ($validate->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -64,12 +64,20 @@ class GastosController extends Controller
         $gastos->descripcion = strtoupper($request->descripcion);
         $gastos->soporte = $path;
         $result = $gastos->save();
+    
+        //adapter data for the payment
+        $request->gasto = $gastos->id;
+        $request->costo = $request->valor;
+
+        $factory = new ServicesFactoryPago($request->modalidad);
+        $pago = $factory->create();
+        $pago->pago($request);
 
         if ($result) {
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Datos guardados correctamente'
-            ], Response::HTTP_OK);;
+            ], Response::HTTP_OK);
         }
         return response()->json([
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,

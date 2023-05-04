@@ -51,7 +51,6 @@ class MantenimientosController extends Controller
 
         $path = '';
 
-
         try {
 
             if ($request->hasFile('soporte')) {
