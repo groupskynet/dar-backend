@@ -12,13 +12,13 @@ class DeudasController extends Controller
     public function index()
     {
         $deudas = DB::table('deudas as d')
-            ->join('mantenimientos as m', 'm.id', '=', 'd.mantenimiento')
-            ->join('proveedores as p', 'm.proveedor', '=', 'p.id')
+            ->join('proveedores as p', 'd.proveedor_id', '=', 'p.id')
             ->select(DB::raw('p.id as id, p.nombres as proveedor,
                 (sum(d.valor) - (select COALESCE(sum(a.valor), 0) from abonos a where a.proveedor = p.id))  as cantidad'))
             ->groupBy(['proveedor', 'id'])
             ->having('cantidad', '>', 0)
             ->paginate(8);
+
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'success',
